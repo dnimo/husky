@@ -6,18 +6,20 @@ import re
 import MeCab
 import json
 import ipadic
+import six
 
 # PATH
 DICT_PATH = "data/MANBYO_202106.dic"
 STOP_WORDS = "data/ja.json"
 
 
-class Tokenizer:
-
-    def __int__(self):
-        print("loading MeCab tokenizer for Japanese..")
-
-    def tokenized(self, text: str):
+def tokenize(text, stemmer):
+    if stemmer:
+        tokens = []
+        tokens = [six.ensure_str(stemmer.stem(x)) if len(x) > 3 else x for x in tokens]
+        return tokens
+    else:
+        valid_tokens = []
         stopwords = json.load(open(STOP_WORDS))
         lines = [line for line in text.splitlines() if line]
         tagger = MeCab.Tagger(ipadic.MECAB_ARGS + f" -O wakati -u {DICT_PATH}")
@@ -33,6 +35,5 @@ class Tokenizer:
 
 
 if __name__ == '__main__':
-    tokenizer = Tokenizer()
-    out = tokenizer.tokenized("私は京都大学のがくせいです！")
+    out = tokenize("私は京都大学のがくせいです！")
     print(out)

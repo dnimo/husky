@@ -9,14 +9,19 @@ from __future__ import print_function
 import collections
 import re
 
+import sys
+sys.path.append('.')
+
 import random
 import string
 import numpy as np
-from rouge_score import scoring
+import scoring
 from absl import logging
 import six
 from six.moves import map
 from six.moves import range
+import tokenizers
+import nltk
 
 
 class RougeScorer(scoring.BaseScorer):
@@ -104,7 +109,7 @@ class RougeScorer(scoring.BaseScorer):
         for rouge_type in self.rouge_types:
             if rouge_type == "rougeL":
                 # Rouge from longest common subsequences.
-                scores = _score_lcs(target_tokens, prediction_tokens)
+                scores = _score_lcs_np(target_tokens, prediction_tokens)
             elif rouge_type == "rougeLsum":
                 # Note: Does not support multi-line text.
                 def get_sents(text):
@@ -168,7 +173,7 @@ def _score_lcs(target_tokens, prediction_tokens):
         return scoring.Score(precision=0, recall=0, fmeasure=0)
 
     # Compute length of LCS from the bottom up in a table (DP appproach).
-    lcs_table = _lcs_table(target_tokens, prediction_tokens)
+    lcs_table = _lcs_table_np(target_tokens, prediction_tokens)
     lcs_length = lcs_table[-1][-1]
 
     precision = lcs_length / len(prediction_tokens)
@@ -276,7 +281,7 @@ def _find_union(lcs_list):
 
 def lcs_ind(ref, can):
     """Returns one of the longest lcs."""
-    t = _lcs_table(ref, can)
+    t = _lcs_table_np(ref, can)
     return _backtrack_norec(t, ref, can)
 
 
@@ -328,7 +333,7 @@ def _score_lcs_np(target_tokens, prediction_tokens):
     precision = lcs_length / len(prediction_tokens)
     recall = lcs_length / len(target_tokens)
     f_measure = scoring.fmeasure(precision, recall)
-    return precision, recall, f_measure
+    return scoring.Score(precision=precision, recall=recall, fmeasure=f_measure)
 
 
 def _lcs_table_np(target_tokens, prediction_tokens):
