@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -9,18 +8,14 @@ from __future__ import print_function
 import collections
 import re
 
-import sys
-sys.path.append('.')
 
-import random
-import string
 import numpy as np
 import scoring
 from absl import logging
 import six
 from six.moves import map
 from six.moves import range
-import tokenizers
+import Tokenizers
 import nltk
 
 
@@ -37,7 +32,7 @@ class RougeScorer(scoring.BaseScorer):
         """Initializes a new RougeScorer.
 
     Valid rouge types that can be computed are:
-      rougen (e.g. rouge1, rouge2): n-gram based scoring.
+      roughen (e.g. rouge1, rouge2): n-gram based scoring.
       rougeL: Longest common subsequence based scoring.
 
     Args:
@@ -46,8 +41,8 @@ class RougeScorer(scoring.BaseScorer):
         strip word suffixes to improve matching. This arg is used in the
         DefaultTokenizer, but other tokenizers might or might not choose to
         use this.
-      split_summaries: whether to add newlines between sentences for rougeLsum
-      tokenizer: Tokenizer object which has a tokenize() method.
+      Split_summaries: whether to add newlines between sentences for rougeLsum
+      tokenizer: Tokenizer object which has a tokenized() method.
     Returns:
       A dict mapping rouge types to Score tuples.
     """
@@ -56,7 +51,7 @@ class RougeScorer(scoring.BaseScorer):
         if tokenizer:
             self._tokenizer = tokenizer
         else:
-            self._tokenizer = tokenizers.DefaultTokenizer(use_stemmer)
+            self._tokenizer = Tokenizers.DefaultTokenizer(use_stemmer)
             logging.debug("Using default tokenizer.")
 
         self._split_summaries = split_summaries
@@ -65,7 +60,7 @@ class RougeScorer(scoring.BaseScorer):
         """Calculates rouge scores between targets and prediction.
 
     The target with the maximum f-measure is used for the final score for
-    each score type..
+    each score type.
 
     Args:
       targets: list of texts containing the targets
@@ -111,7 +106,7 @@ class RougeScorer(scoring.BaseScorer):
                 # Rouge from longest common subsequences.
                 scores = _score_lcs_np(target_tokens, prediction_tokens)
             elif rouge_type == "rougeLsum":
-                # Note: Does not support multi-line text.
+                # Note: Does not support a multi-line text.
                 def get_sents(text):
                     if self._split_summaries:
                         sents = nltk.sent_tokenize(text)
@@ -148,9 +143,9 @@ def _create_ngrams(tokens, n):
 
     Args:
     tokens: A list of tokens from which ngrams are created.
-    n: Number of tokens to use, e.g. 2 for bigrams.
+    n: Number of tokens to use, e.g., 2 for bigrams.
     Returns:
-    A dictionary mapping each bigram to the number of occurrences.
+    A dictionary mapping each big gram to the number of occurrences.
     """
 
     ngrams = collections.Counter()
@@ -172,9 +167,8 @@ def _score_lcs(target_tokens, prediction_tokens):
     if not target_tokens or not prediction_tokens:
         return scoring.Score(precision=0, recall=0, fmeasure=0)
 
-    # Compute length of LCS from the bottom up in a table (DP appproach).
-    lcs_table = _lcs_table_np(target_tokens, prediction_tokens)
-    lcs_length = lcs_table[-1][-1]
+    # Compute length of LCS from the bottom up in a table (DP approach).
+    lcs_length = _lcs_table_np(target_tokens, prediction_tokens)[-1][-1]
 
     precision = lcs_length / len(prediction_tokens)
     recall = lcs_length / len(target_tokens)
@@ -248,11 +242,11 @@ def _summary_level_lcs(ref_sent, can_sent):
     # The paper describes just computing hits += len(_union_lcs()),
     # but the implementation prevents double counting. We also
     # implement this as in version 1.5.5.
-    for t in lcs:
-        if token_cnts_c[t] > 0 and token_cnts_r[t] > 0:
-            hits += 1
-        token_cnts_c[t] -= 1
-        token_cnts_r[t] -= 1
+        for t in lcs:
+            if token_cnts_c[t] > 0 and token_cnts_r[t] > 0:
+                hits += 1
+                token_cnts_c[t] -= 1
+                token_cnts_r[t] -= 1
 
     recall = hits / m
     precision = hits / n
@@ -265,7 +259,7 @@ def _union_lcs(ref, c_list):
 
     Args:
     ref: list of tokens
-    c_list: list of list of indices for LCS into reference summary
+    c_list: list of indices for LCS into reference summary
 
     Returns:
     List of tokens in ref representing union LCS.
@@ -286,7 +280,7 @@ def lcs_ind(ref, can):
 
 
 def _score_ngrams(target_ngrams, prediction_ngrams):
-    """Compute n-gram based rouge scores.
+    """Compute n-gram-based rouge scores.
 
     Args:
     target_ngrams: A Counter object mapping each ngram to number of
@@ -299,14 +293,14 @@ def _score_ngrams(target_ngrams, prediction_ngrams):
     intersection_ngrams_count = 0
     for ngram in six.iterkeys(target_ngrams):
         intersection_ngrams_count += min(target_ngrams[ngram], prediction_ngrams[ngram])
-        target_ngrams_count = sum(target_ngrams.values())
-        prediction_ngrams_count = sum(prediction_ngrams.values())
+    target_ngrams_count = sum(target_ngrams.values())
+    prediction_ngrams_count = sum(prediction_ngrams.values())
 
-        precision = intersection_ngrams_count / max(prediction_ngrams_count, 1)
-        recall = intersection_ngrams_count / max(target_ngrams_count, 1)
-        fmeasure = scoring.fmeasure(precision, recall)
+    precision = intersection_ngrams_count / max(prediction_ngrams_count, 1)
+    recall = intersection_ngrams_count / max(target_ngrams_count, 1)
+    f_measure = scoring.fmeasure(precision, recall)
 
-        return scoring.Score(precision=precision, recall=recall, fmeasure=fmeasure)
+    return scoring.Score(precision=precision, recall=recall, fmeasure=f_measure)
 
 
 def _score_lcs_np(target_tokens, prediction_tokens):
@@ -320,10 +314,10 @@ def _score_lcs_np(target_tokens, prediction_tokens):
     """
 
     if not target_tokens or not prediction_tokens:
-        return 0, 0
+        return scoring.Score(precision=0, recall=0, fmeasure=0)
 
-    # Compute length of LCS from the bottom up in a table (DP appproach).
-    # lcs_table = _lcs_table(target_tokens, prediction_tokens)
+    # Compute length of LCS from the bottom up in a table (DP approach).
+    # Lcs_table = _lcs_table(target_tokens, prediction_tokens)
     lcs_table = _lcs_table_np(target_tokens, prediction_tokens)
     # match_array = np.equal.outer(target_tokens, prediction_tokens)
     # lcs_length = find_longest_diagonal_true_length(match_array)

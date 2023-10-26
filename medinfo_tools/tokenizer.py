@@ -11,29 +11,26 @@ import six
 # PATH
 DICT_PATH = "data/MANBYO_202106.dic"
 STOP_WORDS = "data/ja.json"
+SPACES_PATTERN = r"[\s\n\r]+"
+SPACES_RE = re.compile(SPACES_PATTERN)
 
 
 def tokenize(text, stemmer):
+    text = text.lower()
+    vail_tokens = []
+    _tokens = SPACES_RE.split(text)
     if stemmer:
-        tokens = []
-        tokens = [six.ensure_str(stemmer.stem(x)) if len(x) > 3 else x for x in tokens]
-        return tokens
-    else:
-        valid_tokens = []
-        stopwords = json.load(open(STOP_WORDS))
-        lines = [line for line in text.splitlines() if line]
-        tagger = MeCab.Tagger(ipadic.MECAB_ARGS + f" -O wakati -u {DICT_PATH}")
-        for line in lines:
-            tokens = tagger.parse(line)
-            if tokens is None:
-                continue
-            else:
-                tokens = tokens.split()
-                valid_tokens = [token for token in tokens if token not in stopwords]
+        _tokens = [six.ensure_str(stemmer.stem(x)) if len(x) > 3 else x for x in _tokens]
+    with open(STOP_WORDS, 'r', encoding='UTF-8') as file:
+        stopwords = json.load(file)
+    tagger = MeCab.Tagger(ipadic.MECAB_ARGS + f" -O wakati -u {DICT_PATH}")
+    for line in _tokens:
+        tokens = tagger.parse(line)
+        if tokens is None:
+            continue
+        else:
+            tokens = tokens.split()
+            tokens = [token for token in tokens if token not in stopwords]
+            vail_tokens.extend(tokens)
 
-        return valid_tokens
-
-
-if __name__ == '__main__':
-    out = tokenize("私は京都大学のがくせいです！")
-    print(out)
+    return vail_tokens

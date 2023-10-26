@@ -33,7 +33,7 @@ from absl.testing import absltest
 from absl.testing import parameterized
 import rouge_scorer
 import test_util
-import tokenizers
+import Tokenizers
 
 
 class RougeScorerTest(parameterized.TestCase):
@@ -305,11 +305,12 @@ class RougeScorerTest(parameterized.TestCase):
 
   def testRougeTokenizerInit(self):
     scorer = rouge_scorer.RougeScorer(["rouge1"],
-                                      tokenizer=tokenizers.DefaultTokenizer)
+                                      tokenizer=Tokenizers.DefaultTokenizer(use_stemmer=False))
 
-    target = "this is a test"
+    target = "私は京都大学の学生です！"
     prediction = target
     result = scorer.score(target, prediction)
+    self.assertEqual(1.0, result["rouge1"].recall)
     self.assertEqual(1.0, result["rouge1"].fmeasure)
 
 
