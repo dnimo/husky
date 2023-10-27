@@ -2,8 +2,8 @@
 
 import abc
 from nltk.stem import porter
-import MeCabtokenizer
-import tokenizer
+from . import MeCabtokenizer
+from . import tokenizer
 
 
 class tokenizers(abc.ABC):

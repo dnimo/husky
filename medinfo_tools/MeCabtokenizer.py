@@ -7,10 +7,9 @@ import MeCab
 import json
 import ipadic
 import six
+from medinfo_tools import DICT_PATH, STOP_WORDS
 
 # PATH
-DICT_PATH = "data/MANBYO_202106.dic"
-STOP_WORDS = "data/ja.json"
 SPACES_PATTERN = r"[\s\n\r]+"
 SPACES_RE = re.compile(SPACES_PATTERN)
 

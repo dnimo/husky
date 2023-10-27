@@ -10,10 +10,10 @@ import re
 
 
 import numpy as np
-import scoring
 from absl import logging
 import six
-import Tokenizers
+from medinfo_tools import Tokenizers
+from medinfo_tools import scoring
 import nltk
 
 
@@ -26,7 +26,7 @@ class RougeScorer(scoring.BaseScorer):
                           'The quick brown dog jumps on the log.')
   """
 
-    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer='MeCab'):
+    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer=None):
         """Initializes a new RougeScorer.
 
     Valid rouge types that can be computed are:
@@ -40,7 +40,7 @@ class RougeScorer(scoring.BaseScorer):
         DefaultTokenizer, but other tokenizers might or might not choose to
         use this.
       Split_summaries: whether to add newlines between sentences for rougeLsum
-      tokenizer: Tokenizer object which has a tokenized() method.
+      tokenizer: Tokenizer object which has a tokenized() method. The default method is MeCab.
     Returns:
       A dict mapping rouge types to Score tuples.
     """
