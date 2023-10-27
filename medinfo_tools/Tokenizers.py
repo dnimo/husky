@@ -26,7 +26,7 @@ class MeCabTokenizer(tokenizers):
         self._stemmer = porter.PorterStemmer() if use_stemmer else None
 
     def tokenize(self, text):
-        return MeCabTokenizer.tokenize(text, self._stemmer)
+        return MeCabtokenizer.tokenize(text, self._stemmer)
 
 
 if __name__ == '__main__':
