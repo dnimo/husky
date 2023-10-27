@@ -307,7 +307,7 @@ class RougeScorerTest(parameterized.TestCase):
     scorer = rouge_scorer.RougeScorer(["rouge1"],
                                       tokenizer=Tokenizers.DefaultTokenizer(use_stemmer=False))
 
-    target = "私は京都大学の学生です！"
+    target = "I am a master student in kyoto university"
     prediction = target
     result = scorer.score(target, prediction)
     self.assertEqual(1.0, result["rouge1"].recall)

@@ -28,8 +28,6 @@ import collections
 from typing import Dict
 
 import numpy as np
-import six
-from six.moves import range
 
 
 class Score(
@@ -107,7 +105,7 @@ class BootstrapAggregator(object):
         representing a score.
     """
 
-        for score_type, score in six.iteritems(scores):
+        for score_type, score in scores.iteritems():
             self._scores[score_type].append(score)
 
     def aggregate(self):
@@ -118,7 +116,7 @@ class BootstrapAggregator(object):
     """
 
         result = {}
-        for score_type, scores in six.iteritems(self._scores):
+        for score_type, scores in self._scores.iteritems():
             # Stack scores into a 2-d matrix of (sample, measure).
             score_matrix = np.vstack(tuple(scores))
             # Percentiles are returned as (interval, measure).

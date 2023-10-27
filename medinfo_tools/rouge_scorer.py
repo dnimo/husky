@@ -13,8 +13,6 @@ import numpy as np
 import scoring
 from absl import logging
 import six
-from six.moves import map
-from six.moves import range
 import Tokenizers
 import nltk
 
@@ -28,7 +26,7 @@ class RougeScorer(scoring.BaseScorer):
                           'The quick brown dog jumps on the log.')
   """
 
-    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer=None):
+    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer='MeCab'):
         """Initializes a new RougeScorer.
 
     Valid rouge types that can be computed are:
@@ -48,8 +46,8 @@ class RougeScorer(scoring.BaseScorer):
     """
 
         self.rouge_types = rouge_types
-        if tokenizer:
-            self._tokenizer = tokenizer
+        if tokenizer == "MeCab":
+            self._tokenizer = Tokenizers.MeCabTokenizer(use_stemmer)
         else:
             self._tokenizer = Tokenizers.DefaultTokenizer(use_stemmer)
             logging.debug("Using default tokenizer.")
@@ -332,15 +330,14 @@ def _score_lcs_np(target_tokens, prediction_tokens):
 
 def _lcs_table_np(target_tokens, prediction_tokens):
     """Create 2-d LCS score table."""
-    rows = len(target_tokens)
-    cols = len(prediction_tokens)
+    s = np.array(target_tokens)
+    t = np.array(prediction_tokens)
 
-    match_array = np.equal.outer(target_tokens, prediction_tokens)
-    lcs_table = np.zeros((rows + 1, cols + 1))
-    for i in range(1, rows + 1):
-        for j in range(1, cols + 1):
-            if match_array[i - 1, j - 1]:
-                lcs_table[i, j] = lcs_table[i - 1, j - 1] + 1
-            else:
-                lcs_table[i, j] = max(lcs_table[i - 1, j], lcs_table[i, j - 1])
+    equal = (s[:, None] == t[None, :])
+    ls, lt = len(s), len(t)
+    lcs_table = np.zeros((ls + 1, lt+1), dtype=np.int64)
+
+    for i in range(ls):
+        lcs_table[i + 1][1:] = np.maximum(lcs_table[i][1:], lcs_table[i][:-1] + equal[i])
+        lcs_table[i + 1] = np.maximum.accumulate(lcs_table[i + 1])
     return lcs_table

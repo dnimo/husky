@@ -14,6 +14,9 @@
 # limitations under the License.
 
 """Tests for tokenizers."""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 from absl.testing import absltest
 import Tokenizers
@@ -23,14 +26,14 @@ class TokenizersTest(absltest.TestCase):
 
   def test_default_tokenizer_no_stemmer_init(self):
     tokenizer = Tokenizers.DefaultTokenizer(use_stemmer=False)
-    self.assertIsInstance(tokenizer, Tokenizers.Tokenizer)
+    self.assertIsInstance(tokenizer, Tokenizers.tokenizers)
 
     result = tokenizer.tokenize("this is a test")
     self.assertListEqual(["this", "is", "a", "test"], result)
 
   def test_default_tokenizer_with_stemmer_init(self):
     tokenizer = Tokenizers.DefaultTokenizer(use_stemmer=True)
-    self.assertIsInstance(tokenizer, Tokenizers.Tokenizer)
+    self.assertIsInstance(tokenizer, Tokenizers.tokenizers)
 
     result = tokenizer.tokenize("the friends had a meeting")
     self.assertListEqual(["the", "friend", "had", "a", "meet"], result)
