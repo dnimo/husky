@@ -1,10 +1,10 @@
 import torch.nn as nn
 
 from pretrain_config import *
-from roberta.common.tokenizers import Tokenizer
-from roberta.layers.Mlm import Mlm
-from roberta.layers.Transformer import Transformer
-from roberta.layers.RobertaEmbeddings import RobertaEmbeddings
+from RoBERTa.common.tokenizers import Tokenizer
+from RoBERTa.layers.Mlm import Mlm
+from RoBERTa.layers.Transformer import Transformer
+from RoBERTa.layers.RobertaEmbeddings import RobertaEmbeddings
 
 
 class RobertaNer(nn.Module):

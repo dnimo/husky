@@ -338,6 +338,7 @@ def _lcs_table_np(target_tokens, prediction_tokens):
     lcs_table = np.zeros((ls + 1, lt+1), dtype=np.int64)
 
     for i in range(ls):
-        lcs_table[i + 1][1:] = np.maximum(lcs_table[i][1:], lcs_table[i][:-1] + equal[i])
-        lcs_table[i + 1] = np.maximum.accumulate(lcs_table[i + 1])
+
+        max_vals = np.maximum(lcs_table[i, 1:], lcs_table[i, :-1] + equal[i])
+        lcs_table[i + 1, 1:] = np.maximum.accumulate(max_vals)
     return lcs_table
