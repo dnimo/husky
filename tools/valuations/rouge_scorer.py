@@ -13,7 +13,7 @@ import numpy as np
 from absl import logging
 import six
 from tools.tokenizers import tokenizers
-from . import scoring
+import scoring
 import nltk
 
 

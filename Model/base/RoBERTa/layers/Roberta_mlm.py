@@ -1,7 +1,7 @@
 import torch.nn as nn
 
-from pretrain_config import *
-from Model.base.RoBERTa import Tokenizer
+from Model.base.RoBERTa.pretrain_config import *
+from Model.base.RoBERTa.common.tokenizers import Tokenizer
 from Model.base.RoBERTa.layers.Transformer import Transformer
 from Model.base.RoBERTa.layers.RobertaEmbeddings import RobertaEmbeddings
 from Model.base.RoBERTa.layers.Mlm import Mlm
@@ -76,7 +76,7 @@ class RobertaMlm(nn.Module):
                 local = key
                 target = local2target_emb[key]
                 new_parameter_dict[local] = pretrain_model_dict[target]
-            # 加载transformerblock层参数
+            # 加载transformer-block层参数
             for i in range(self.num_hidden_layers):
                 for key in local2target_transformer:
                     local = key % i

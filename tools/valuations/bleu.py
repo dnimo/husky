@@ -8,7 +8,7 @@ from __future__ import print_function, division
 import numpy as np
 
 
-class BLEU():
+class BLEU:
     def __init__(self, n_gram=1):
         self.n_gram = n_gram
 

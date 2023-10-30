@@ -1,7 +1,7 @@
 import torch.nn as nn
 
-from pretrain_config import *
-from Model.base.RoBERTa import Tokenizer
+from Model.base.RoBERTa.pretrain_config import *
+from Model.base.RoBERTa.common.tokenizers import Tokenizer
 from Model.base.RoBERTa.layers.Mlm import Mlm
 from Model.base.RoBERTa.layers.Transformer import Transformer
 from Model.base.RoBERTa.layers.RobertaEmbeddings import RobertaEmbeddings

@@ -2,7 +2,7 @@ import math
 import torch
 import torch.nn as nn
 
-from pretrain_config import *
+from Model.base.RoBERTa.pretrain_config import *
 
 
 class MultiHeadSelfAttention(nn.Module):

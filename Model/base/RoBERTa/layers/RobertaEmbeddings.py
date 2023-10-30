@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from pretrain_config import SentenceLength, device
+from Model.base.RoBERTa.pretrain_config import SentenceLength, device
 
 
 class RobertaEmbeddings(nn.Module):

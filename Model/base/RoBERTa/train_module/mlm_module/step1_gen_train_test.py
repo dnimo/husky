@@ -1,8 +1,8 @@
 import random
 
-from common import check_srcdata_and_vocab
-from pretrain_config import *
-from roberta.common.tokenizers import Tokenizer
+from Model.base.RoBERTa.common.check_tokens import check_srcdata_and_vocab
+from  Model.base.RoBERTa.pretrain_config import *
+from  Model.base.RoBERTa.common.tokenizers import Tokenizer
 
 
 def random_wrong(text):

@@ -4,9 +4,11 @@ import pkuseg
 import numpy as np
 
 from tqdm import tqdm
-from roberta.common.tokenizers import Tokenizer
-from pretrain_config import *
+from Model.base.RoBERTa.common.tokenizers import Tokenizer
+from Model.base.RoBERTa.pretrain_config import *
 from torch.utils.data import Dataset
+
+from Model.base.RoBERTa.pretrain_config import ModelClass
 
 
 class DataFactory(object):
