@@ -25,7 +25,6 @@ from __future__ import print_function
 
 import abc
 import collections
-from typing import Dict
 
 import numpy as np
 

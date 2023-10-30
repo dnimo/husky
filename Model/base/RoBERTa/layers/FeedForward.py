@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-from RoBERTa.layers.Gelu import GELU
+from Model.base.RoBERTa.layers.Gelu import GELU
 
 
 class FeedForward(nn.Module):

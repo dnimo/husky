@@ -13,7 +13,13 @@ All rights belong to Auther.
 ```text
 # Structure
 Husky
+    __init__.py
+    data
     tools
+        tikenizers
+            MeCab
+            tokenizers
+            __init__.py
         dataset
             sliding window method
         valuation

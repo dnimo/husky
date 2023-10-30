@@ -1,7 +1,7 @@
 import torch.nn as nn
 
-from RoBERTa.layers.FeedForward import FeedForward
-from RoBERTa.layers.MultiHeadSelfAttention import MultiHeadSelfAttention
+from Model.base.RoBERTa.layers.FeedForward import FeedForward
+from Model.base.RoBERTa.layers.MultiHeadSelfAttention import MultiHeadSelfAttention
 
 
 class Transformer(nn.Module):

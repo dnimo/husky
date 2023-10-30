@@ -2,8 +2,8 @@
 # 工具函数
 import re
 import unicodedata
-from RoBERTa.common.snippets import is_string, is_py2
-from RoBERTa.common.snippets import open
+from Model.base.RoBERTa import is_string, is_py2
+from Model.base.RoBERTa import open
 
 
 def load_vocab(dict_path, encoding='utf-8', simplified=False, startswith=None):

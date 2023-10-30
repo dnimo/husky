@@ -1,8 +1,8 @@
-'''
+"""
 Author = KuoCh'ing Chang(kuochingcha@gamil.com)
 Data = 2023/20/27
 New feature -> merge blue to medinfo_tools package make it eazsy to use.
-'''
+"""
 from __future__ import print_function, division
 
 import numpy as np
@@ -13,11 +13,11 @@ class BLEU():
         self.n_gram = n_gram
 
     def evaluate(self, candidates, references):
-        '''compute bleu
+        """compute bleu
         @param candidates [[[token1, token2, ...]]] output by model
         @param references [[[token1, token2, ...]]] reference text
-        @param bleu result of compution fomart [candidate_1_result, candidate_2_result]
-        '''
+        @param bleu result of computing format [candidate_1_result, candidate_2_result]
+        """
 
         BP = 1
         bleu = np.zeros(len(candidates))
@@ -52,24 +52,24 @@ class BLEU():
         return bleu
 
     def extractNgram(self, candidate, n):
-        '''extractNgram
+        """extractNgram
         @param candidate: [str] output by model
         @param n int n-gram
         @return count int n-gram-numbers
         @return n_grams set() n-grams
-        '''
+        """
 
         count = 0
         n_grams = set()
-        if (len(candidate) - n + 1 > 0):
+        if len(candidate) - n + 1 > 0:
             count += len(candidate) - n + 1
         for i in range(len(candidate) - n + 1):
             n_gram = ' '.join(candidate[i:i + n])
             n_grams.add(n_gram)
-        return (count, n_grams)
+        return count, n_grams
 
     def countClip(self, references, n, n_gram):
-        ''' count n_grams number in references
+        """ count n_grams number in references
         @param references [[str]] reference text
         @param n int n-gram numbers
         @param n_gram set n-grams
@@ -77,7 +77,7 @@ class BLEU():
         @return:
         @count times
         @index index of max appear
-        '''
+        """
 
         max_count = 0
         index = 0
@@ -89,4 +89,4 @@ class BLEU():
             if max_count < count:
                 max_count = count
                 index = j
-        return (max_count, index)
+        return max_count, index
