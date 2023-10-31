@@ -3,13 +3,13 @@ import bleu
 import rouge_scorer
 
 
-class valuations(abc.ABC):
+class Valuations(abc.ABC):
     @abc.abstractmethod
     def valuate(self, target, prediction):
         raise NotImplementedError("valuations must override valuate method")
 
 
-class Bleu(valuations):
+class Bleu(Valuations):
     def __init__(self, n_gram=1):
         self._n_gram = n_gram
 
@@ -17,7 +17,7 @@ class Bleu(valuations):
         return bleu.BLEU(self._n_gram).evaluate(prediction, target)
 
 
-class Rouge(valuations):
+class Rouge(Valuations):
     def __init__(self, rouge_type, use_stemmer=False, split_summarise=False, tokenizer=None):
         self.tokenizer = tokenizer
         self.rouge_type = rouge_type

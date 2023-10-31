@@ -12,8 +12,7 @@ class valuationsTest(absltest.TestCase):
         candidates = [['It is a guide to action that ensures that the military always obeys the commands of the party']]
 
         references = [['It is a guide to action that ensures that the military will forever heed party commands'],
-                      [
-                          'it is the guiding principe which guarantees the military always being under the command of the party'],
+                      ['it is the guiding principe which guarantees the military always being under the command of the party'],
                       ['it is the practical guide for the army always to heed the directions of the party']
                       ]
 
