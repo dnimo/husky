@@ -3,52 +3,47 @@ Author = KuoCh'ing Chang(kuochingcha@gamil.com)
 Data = 2023/20/27
 New feature -> merge blue to medinfo_tools package make it eazsy to use.
 """
+# TODO: rewrite bleu function to unit the input structure
 from __future__ import print_function, division
 
 import numpy as np
+from tools.tokenizers import tokenizers
 
 
 class BLEU:
     def __init__(self, n_gram=1):
         self.n_gram = n_gram
 
-    def evaluate(self, candidates, references):
+    def evaluate(self, candidate, reference):
         """compute bleu
-        @param candidates [[[token1, token2, ...]]] output by model
-        @param references [[[token1, token2, ...]]] reference text
+        @param a candidate = "text" output by model
+        @param reference = "text" reference text
         @param bleu result of computing format [candidate_1_result, candidate_2_result]
         """
+        mytokenizer = tokenizers.MeCabTokenizer()
+        candidate_tokens = mytokenizer.tokenize(candidate)
+        reference_tokens = mytokenizer.tokenize(reference)
+        r, c = 0, 0
+        count = np.zeros(self.n_gram)
+        count_clip = np.zeros(self.n_gram)
+        p = np.zeros(self.n_gram)
+        for i in range(self.n_gram):
+            count_, n_grams = self.extractNgram(candidate_tokens, i + 1)
+            count[i] += count_
+            count_clip_ = self.countClip(reference_tokens, i + 1, n_grams)
+            count_clip[i] += count_clip_
+            c += len(candidate_tokens)
+            r += len(reference_tokens)
+        p = count_clip / count
+        rc = r / c
+        if rc >= 1:
+            bp = np.exp(1 - rc)
+        else:
+            bp = 1
 
-        BP = 1
-        bleu = np.zeros(len(candidates))
-        for k, candidate in enumerate(candidates):
-            r, c = 0, 0
-            count = np.zeros(self.n_gram)
-            count_clip = np.zeros(self.n_gram)
-            # count_index = np.zeros(self.n_gram)
-            p = np.zeros(self.n_gram)
-
-            for j, candidate_sent in enumerate(candidate):
-                # for each sentence
-                for i in range(self.n_gram):
-                    count_, n_grams = self.extractNgram(candidate_sent, i + 1)
-                    count[i] += count_
-                    reference_sents = []
-                    reference_sents = [reference[j] for reference in references]
-                    count_clip_, count_index_ = self.countClip(reference_sents, i + 1, n_grams)
-                    count_clip[i] += count_clip_
-                    c += len(candidate_sent)
-                    r += len(reference_sents[count_index_])
-                p = count_clip / count
-            rc = r / c
-            if rc >= 1:
-                BP = np.exp(1 - rc)
-            else:
-                rc = 1
-
-            p[p == 0] = 1e-100
-            p = np.log(p)
-            bleu[k] = BP * np.exp(np.average(p))
+        p[p == 0] = 1e-100
+        p = np.log(p)
+        bleu = bp * np.exp(np.average(p))
         return bleu
 
     def extractNgram(self, candidate, n):
@@ -68,7 +63,7 @@ class BLEU:
             n_grams.add(n_gram)
         return count, n_grams
 
-    def countClip(self, references, n, n_gram):
+    def countClip(self, reference, n, n_gram):
         """ count n_grams number in references
         @param references [[str]] reference text
         @param n int n-gram numbers
@@ -81,12 +76,10 @@ class BLEU:
 
         max_count = 0
         index = 0
-        for j, reference in enumerate(references):
-            count = 0
-            for i in range(len(reference) - n + 1):
-                if (' '.join(reference[i:i + n]) in n_gram):
+        count = 0
+        for i in range(len(reference) - n + 1):
+            if (' '.join(reference[i:i + n]) in n_gram):
                     count += 1
-            if max_count < count:
-                max_count = count
-                index = j
-        return max_count, index
+        if max_count < count:
+            max_count = count
+        return max_count
