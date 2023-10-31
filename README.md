@@ -2,11 +2,11 @@
 
 # husky
 
-This project is release by KuoCh"ing Chang.
+This project is released by KuoCh"ing Chang.
 
-We shooting this project to solve medical info. processing. 
+We are shooting this project to solve medical info. processing. 
 
-All rights belong to Auther.
+All rights belong to the author.
 
 # Project map
 
@@ -52,13 +52,14 @@ Husky
 ### Dataset
 
 * Knowledge graph rebuild
-* deduplicate by sim-hash（Done）
+* Deduplicated by sim-hash（Done）
 
 ### Token Distribution Analysis
 
 * RoBerta (lanuching)
 * LDA
 * Information entropy
+* Rreq (lanuching)
 
 ### training
 
@@ -66,8 +67,8 @@ Husky
 
 ### valuation
 
-* BLUE
-* ROUGE rewrite by Numpy
+* BLUE (Done)
+* ROUGE rewrite by Numpy (Done)
 
 ### inference
 

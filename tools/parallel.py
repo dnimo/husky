@@ -1,24 +1,16 @@
 from multiprocessing import Process, Queue, JoinableQueue
 import time
+import abc
 
 
-class Parallel:
+class Parallel(abc.ABC):
     """
-    this function is a tool to parallel the computation
-    @param target_func, which will speed up
-    using multi_compute function to parallel the computed process.
-    The input is num_process & data_to_process, which means cpu cores and data.
-    The input structure like: num_process = 1, data_to_process = [("text1", "text2"), ("text1", "text2")...]
+    This is a farther class of SumParallel.
+    You can override processor function to the customer you compute tasks.
     """
-    def __init__(self, target_func):
-        self.target = target_func
-
+    @abc.abstractmethod
     def processor(self, data_queue, results_queue):
-        while not data_queue.empty():
-            data = data_queue.get(timeout=1)
-            process = self.target.valuate(data[0],data[1])
-            results_queue.put(process)
-            data_queue.task_done()
+        raise NotImplementedError("Parallel must override processor method!")
 
     def multi_compute(self, num_process: int, data_to_process: list):
         start = time.time()
@@ -50,6 +42,29 @@ class Parallel:
         cost = end - start
 
         print(f"All data processed time cost is {cost = :.4f}")
+
+        return final_results
+
+
+class SumParallel(Parallel):
+    """
+    this function is a tool to parallel the computation
+    @param target_func, which will speed up
+    using multi_compute function to parallel the computed process.
+    The input is num_process & data_to_process, which means cpu cores and data.
+    The input structure like: num_process = 1, data_to_process = [("text1", "text2"), ("text1", "text2")...]
+    """
+
+    def __init__(self, target_func):
+        self.target = target_func
+
+    def processor(self, data_queue, results_queue):
+        while not data_queue.empty():
+            data = data_queue.get(timeout=1)
+            process = self.target.valuate(data[0], data[1])
+            results_queue.put(process)
+            data_queue.task_done()
+
 
 if __name__ == '__main__':
     print("testing")

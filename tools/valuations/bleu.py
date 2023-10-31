@@ -3,7 +3,6 @@ Author = KuoCh'ing Chang(kuochingcha@gamil.com)
 Data = 2023/20/27
 New feature -> merge blue to medinfo_tools package make it eazsy to use.
 """
-# TODO: rewrite bleu function to unit the input structure
 from __future__ import print_function, division
 
 import numpy as np
