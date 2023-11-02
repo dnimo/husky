@@ -46,7 +46,7 @@ class Parallel(abc.ABC):
         return final_results
 
 
-class SumParallel(Parallel):
+class DefaultParallel(Parallel):
     """
     this function is a tool to parallel the computation
     @param target_func, which will speed up
