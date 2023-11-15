@@ -1,6 +1,6 @@
 import math
 import random
-import pkuseg
+# import pkuseg
 import numpy as np
 
 from tqdm import tqdm
@@ -43,13 +43,13 @@ class DataFactory(object):
                 words = self.seg.cut(text)
                 for word in words:
                     # text_ids首位分别是cls和sep，这里暂时去除
-                    word_tokes = tokenize(text=word)[1:-1]
+                    word_tokes = self.tokenizer.tokenize(text=word)[1:-1]
                     words_ids = self.tokenizer.tokens_to_ids(word_tokes)
                     texts_ids.append(words_ids)
             else:
                 for word in text:
                     # text_ids首位分别是cls和sep，这里暂时去除
-                    word_tokes = tokenize(text=word)[1:-1]
+                    word_tokes = self.tokenizer.tokenize(text=word)[1:-1]
                     words_ids = self.tokenizer.tokens_to_ids(word_tokes)
                     texts_ids.append(words_ids)
         return texts_ids

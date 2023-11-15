@@ -1,7 +1,7 @@
 import pickle
 
-from roberta.common.tokenizers import Tokenizer
-from pretrain_config import *
+from Model.base.RoBERTa.common.tokenizers import Tokenizer
+from Model.base.RoBERTa.pretrain_config import *
 from torch.utils.data import Dataset
 
 

@@ -1,8 +1,8 @@
 import random
 import pickle
 
-from config import *
-from roberta.common.tokenizers import Tokenizer
+from Model.base.RoBERTa.pretrain_config import *
+from Model.base.RoBERTa.common.tokenizers import Tokenizer
 
 
 class TrainDataGenerator(object):

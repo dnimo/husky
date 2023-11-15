@@ -1,13 +1,13 @@
 import os
+
 os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 
 import torch.nn as nn
 
 from torch.optim import Adam
 from torch.utils.data import DataLoader
-from roberta.data.mlm_dataset import *
-from roberta.layers.Roberta_mlm import RobertaMlm
-
+from Model.base.RoBERTa.data.mlm_dataset import *
+from Model.base.RoBERTa.layers.Roberta_mlm import RobertaMlm
 
 if __name__ == '__main__':
     if Debug:

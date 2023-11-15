@@ -1,12 +1,12 @@
 import random
 
 from Model.base.RoBERTa.common.check_tokens import check_srcdata_and_vocab
-from  Model.base.RoBERTa.pretrain_config import *
-from  Model.base.RoBERTa.common.tokenizers import Tokenizer
+from Model.base.RoBERTa.pretrain_config import *
+from Model.base.RoBERTa.common.tokenizers import SpTokenizer
 
 
 def random_wrong(text):
-    tokenizer = Tokenizer(VocabPath)
+    tokenizer = SpTokenizer(VocabPath)
     length = len(text)
     position = random.randint(0, length-1)
     number = random.randint(672, 7992)
