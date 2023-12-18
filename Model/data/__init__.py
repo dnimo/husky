@@ -1,0 +1,1 @@
+from __init__ import PATH_DATA

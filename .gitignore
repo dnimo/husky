@@ -1,7 +1,9 @@
-/HYAKUYAKU_v20210706/
 /venv/
 /Zip/
 /temp/
 /.idea/
 /.DS_Store
+/.vscode/
+/unitTest/
 **__pycache__**
+/data/

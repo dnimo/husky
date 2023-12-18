@@ -1,10 +1,10 @@
-<div align="center"><img src="img/Name_Card.png"/></div>
+<div><img src="img/Name_Card.png"/></div>
 
 # husky
 
 This project is released by KuoCh"ing Chang.
 
-We are shooting this project to solve medical info. processing. 
+We are shooting this project to solve medical information processing. 
 
 All rights belong to the author.
 
@@ -16,15 +16,16 @@ Husky
     __init__.py
     data
     tools
-        tikenizers
+        Tokenizers
             MeCab
+            SentencePiece
             tokenizers
-            __init__.py
-        dataset
+        dataformat
             sliding window method
         valuation
             rouge
             bleu
+            Information entropy
         analysis
             token distribution
             LDA
@@ -32,19 +33,18 @@ Husky
             Topic cluster
         cleaner
             deduplicate
-            format
+            delete \n\n
         Knowldge Graph
             ?
+        PCW
+            Parallel Context Windows
     Model
-        base
-            RoBERTa
-            Open-calm
-            LLama-2
-        train
-            lora
-        inference
-            Parallel Context Window method
-
+        RoBERTa
+        Open-calm
+        LLama-2
+        BERT
+    ChatUI
+        ?
 ```
 
 ## TODO
@@ -56,10 +56,7 @@ Husky
 
 ### Token Distribution Analysis
 
-* RoBerta (lanuching)
 * LDA
-* Information entropy
-* Rreq (lanuching)
 
 ### training
 
@@ -72,4 +69,4 @@ Husky
 
 ### inference
 
-* Parallel Context Windows
+* Parallel Context Windows(launching)
