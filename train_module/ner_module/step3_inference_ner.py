@@ -7,7 +7,7 @@ import pickle
 from pretrain_config import *
 from roberta.common.tokenizers import Tokenizer
 from checkpoint.pretrain.ner_dict import NerClassDict
-from train_module.ner_module.step2_pretrain_ner import extract_output_entities
+from Model.train_module.ner_module.step2_pretrain_ner import extract_output_entities
 
 
 class NerInference(object):
