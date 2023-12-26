@@ -6,7 +6,7 @@ New feature -> merge blue to medinfo_tools package make it eazsy to use.
 from __future__ import print_function, division
 
 import numpy as np
-from Tokenizers import tokenizers
+from tools.Tokenizers import tokenizers
 
 
 class BLEU:

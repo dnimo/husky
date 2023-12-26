@@ -1,8 +1,8 @@
 import random
 
-from Model.common.check_tokens import check_srcdata_and_vocab
+from tools.Model.common import check_srcdata_and_vocab
 from Model.pretrain_config import *
-from Model.common.tokenizers import SpTokenizer
+from tools.Model.common import SpTokenizer
 
 
 def random_wrong(text):

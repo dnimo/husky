@@ -2,7 +2,7 @@ import random
 import pickle
 
 from Model.pretrain_config import *
-from Model.common.tokenizers import Tokenizer
+from tools.Model.common import Tokenizer
 
 
 class TrainDataGenerator(object):

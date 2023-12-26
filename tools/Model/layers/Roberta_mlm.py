@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 from Model.pretrain_config import *
-from Model.common.tokenizers import SpTokenizer
+from tools.Model.common import SpTokenizer
 from Model.layers.Transformer import Transformer
 from Model.layers.RobertaEmbeddings import RobertaEmbeddings
 from Model.layers.Mlm import Mlm

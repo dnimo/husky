@@ -136,10 +136,6 @@ tokenizers==0.13.3
     # via transformers
 transformers==4.28.1
     # via -r requirements.in
-typing-extensions==4.6.3
-    # via
-    #   huggingface-hub
-    #   torch
 urllib3==2.0.3
     # via
     #   requests

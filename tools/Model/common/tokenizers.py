@@ -3,7 +3,7 @@
 import re
 import unicodedata
 
-from Model.common.snippets import is_string, is_py2
+from tools.Model.common import is_string, is_py2
 
 
 def load_vocab(dict_path, encoding='utf-8', simplified=False, startswith=None):

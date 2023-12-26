@@ -3,7 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 from absl.testing import absltest
-import valuations
+from tools import valuations
 
 
 class valuationsTest(absltest.TestCase):

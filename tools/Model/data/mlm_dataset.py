@@ -5,7 +5,7 @@ import ipadic
 import numpy as np
 
 from tqdm import tqdm
-from Model.common.tokenizers import SpTokenizer
+from tools.Model.common import SpTokenizer
 from Model.pretrain_config import *
 from torch.utils.data import Dataset
 from __init__ import DICT_PATH

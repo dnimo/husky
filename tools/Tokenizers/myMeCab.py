@@ -1,17 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import re
-
+import os
 # dependence
 import MeCab
 import json
 import ipadic
 import six
-from tools import DICT_PATH, STOP_WORDS
 
 # PATH
 SPACES_PATTERN = r"[\s\n\r]+"
 SPACES_RE = re.compile(SPACES_PATTERN)
+PATH_DATA = r'C:\Users\KuoChing\workspace\husky\data'
+
+DICT_PATH = os.path.join(PATH_DATA, "MANBYO_202106.dic")
+STOP_WORDS = os.path.join(PATH_DATA, "ja.json")
 
 
 with open(STOP_WORDS, 'r', encoding='UTF-8') as file:
