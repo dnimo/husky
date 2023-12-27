@@ -6,8 +6,8 @@ import torch.nn as nn
 
 from torch.optim import Adam
 from torch.utils.data import DataLoader
-from Model.base.RoBERTa.data.mlm_dataset import *
-from Model.base.RoBERTa.layers.Roberta_mlm import RobertaMlm
+from tools.Model.data.mlm_dataset import *
+from tools.Model.layers.Roberta_mlm import RobertaMlm
 from datasets import load_dataset, Dataset
 
 
