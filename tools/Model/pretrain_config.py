@@ -3,8 +3,6 @@ import torch
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = '2,3,4'
 
-from accelerate import Accelerator
-
 device = torch.device("cuda" if (torch.cuda.is_available()) else "cpu")
 
 VocabPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/kuhpTokenizer/40000_vocab/bert_bpe_vocab_40000.vocab'
@@ -13,7 +11,7 @@ TokenizerPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky
 
 # ## mlm模型文件路径 ## #
 CorpusPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/data/del_none_data_for_train_tokenizer.txt'
-# CorpusPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/data/sample.txt'
+# samples = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/data/sample.txt'
 PronunciationPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/tools/Model/base/RoBERTa/data/char_meta.json'
 
 # Debug开关
