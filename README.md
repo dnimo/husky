@@ -2,9 +2,18 @@
 
 # husky
 
-This project is released by KuoCh"ing Chang.
+This project is released by KuoCh'ing Chang.
 
-We are shooting this project to solve medical information processing. 
+In this project, we will use the latest NLP technology to process medical information, including but not limited to the following tasks:
+
+- Data cleaning
+- Tokenization
+- Model training
+- Model evaluation
+- Model inference
+- Model deployment
+- Model visualization
+- Model optimization
 
 All rights belong to the author.
 
@@ -20,8 +29,6 @@ Husky
             MeCab
             SentencePiece
             tokenizers
-        dataformat
-            sliding window method
         valuation
             rouge
             bleu
@@ -34,8 +41,6 @@ Husky
         cleaner
             deduplicate
             delete \n\n
-        Knowldge Graph
-            ?
         PCW
             Parallel Context Windows
     Model

@@ -4,6 +4,4 @@
 /.idea/
 /.DS_Store
 /.vscode/
-/unitTest/
 **__pycache__**
-/data/
