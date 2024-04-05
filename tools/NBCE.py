@@ -1,8 +1,5 @@
 #! -*- coding: utf-8 -*-
 # Naive Bayes-based Context Extension (NBCE)
-# 使用朴素贝叶斯增加LLM的Context处理长度
-# 链接：https://kexue.fm/archives/9617
-# Torch 2.0 测试通过
 
 import json
 import torch
@@ -10,8 +7,7 @@ from transformers import AutoTokenizer
 from transformers import AutoModelForCausalLM
 from transformers import TopPLogitsWarper, LogitsProcessorList
 
-# 经过微调的LLAMA
-# 下载地址：https://openbuddy.ai/
+# 模型路径
 model_path = 'cyberagent/open-calm-small'
 
 # 加载tokenizer
