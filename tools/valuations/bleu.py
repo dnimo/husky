@@ -6,12 +6,19 @@ New feature -> merge blue to medinfo_tools package make it eazsy to use.
 from __future__ import print_function, division
 
 import numpy as np
-from tools.tokenizers import Mecab
+from tools.tokenizers import MeCabTokenizer
+from tools.tokenizers.bytepiece import Tokenizer as BytePieceTokenizer
 
 
 class BLEU:
-    def __init__(self, n_gram=1):
+    def __init__(self, n_gram: int = 2, tokenizer: str = 'mecab'):
         self.n_gram = n_gram
+        if tokenizer == 'mecab':
+            self.tokenizer = MeCabTokenizer()
+        if tokenizer == 'bytepiece':
+            self.tokenizer = BytePieceTokenizer
+        else:
+            raise ValueError("tokenizer not found")
 
     def evaluate(self, candidate, reference):
         """compute bleu
@@ -19,9 +26,8 @@ class BLEU:
         @param reference = "text" reference text
         @param bleu result of computing format [candidate_1_result, candidate_2_result]
         """
-        mytokenizer = Mecab()
-        candidate_tokens = mytokenizer.tokenize(candidate)
-        reference_tokens = mytokenizer.tokenize(reference)
+        candidate_tokens = self.tokenizer.tokenize(candidate)
+        reference_tokens = self.tokenizer.tokenize(reference)
         r, c = 0, 0
         count = np.zeros(self.n_gram)
         count_clip = np.zeros(self.n_gram)

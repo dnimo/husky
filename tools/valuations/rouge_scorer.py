@@ -8,11 +8,10 @@ from __future__ import print_function
 import collections
 import re
 
-
 import numpy as np
-from absl import logging
 import six
-from tools.tokenizers import Mecab, BasicTokenizer
+from tools.tokenizers.MeCab import MeCabTokenizer
+from tools.tokenizers.bytepiece import Tokenizer as BytePieceTokenizer
 from . import scoring
 import nltk
 
@@ -26,7 +25,7 @@ class RougeScorer(scoring.BaseScorer):
                           'The quick brown dog jumps on the log.')
   """
 
-    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer: str = "MeCab"):
+    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer: str = "mecab"):
         """Initializes a new RougeScorer.
 
     Valid rouge types that can be computed are:
@@ -48,12 +47,12 @@ class RougeScorer(scoring.BaseScorer):
         self.rouge_types = rouge_types
         self.use_stemmer = use_stemmer
         self._split_summaries = split_summaries
-        if tokenizer == "MeCab":
-            self._tokenizer = Mecab()
+        if tokenizer == 'mecab':
+            self._tokenizer = MeCabTokenizer()
+        elif tokenizer == 'bytepiece':
+            self._tokenizer = BytePieceTokenizer
         else:
-            self._tokenizer = BasicTokenizer()
-            logging.debug("Using default tokenizer.")
-
+            raise ValueError("tokenizer not found")
 
     def score_multi(self, targets, prediction):
         """Calculates rouge scores between targets and prediction.
@@ -96,8 +95,8 @@ class RougeScorer(scoring.BaseScorer):
             target_tokens = None
             prediction_tokens = None
         else:
-            target_tokens = self._tokenizer.tokenize(target, self.use_stemmer)
-            prediction_tokens = self._tokenizer.tokenize(prediction, self.use_stemmer)
+            target_tokens = self._tokenizer.tokenize(target)
+            prediction_tokens = self._tokenizer.tokenize(prediction)
         result = {}
 
         for rouge_type in self.rouge_types:
@@ -237,10 +236,10 @@ def _summary_level_lcs(ref_sent, can_sent):
     hits = 0
     for r in ref_sent:
         lcs = _union_lcs(r, can_sent)
-    # Prevent double-counting:
-    # The paper describes just computing hits += len(_union_lcs()),
-    # but the implementation prevents double counting. We also
-    # implement this as in version 1.5.5.
+        # Prevent double-counting:
+        # The paper describes just computing hits += len(_union_lcs()),
+        # but the implementation prevents double counting. We also
+        # implement this as in version 1.5.5.
         for t in lcs:
             if token_cnts_c[t] > 0 and token_cnts_r[t] > 0:
                 hits += 1
@@ -336,10 +335,9 @@ def _lcs_table_np(target_tokens, prediction_tokens):
 
     equal = (s[:, None] == t[None, :])
     ls, lt = len(s), len(t)
-    lcs_table = np.zeros((ls + 1, lt+1), dtype=np.int64)
+    lcs_table = np.zeros((ls + 1, lt + 1), dtype=np.int64)
 
     for i in range(ls):
-
         max_vals = np.maximum(lcs_table[i, 1:], lcs_table[i, :-1] + equal[i])
         lcs_table[i + 1, 1:] = np.maximum.accumulate(max_vals)
     return lcs_table
