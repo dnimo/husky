@@ -7,7 +7,7 @@ import numpy.typing as npt
 import pandas as pd
 from tqdm import tqdm
 
-from ParallelContextsWindows import PROMPTS, N_TOKENS, TEXT_BETWEEN_SHOTS
+from ParallelContextsWindows.constants import PROMPTS, N_TOKENS, TEXT_BETWEEN_SHOTS
 from ParallelContextsWindows.pcw_wrapper import PCWModelWrapper
 from ParallelContextsWindows.logits_processor import RestrictiveTokensLogitsProcessor
 from ParallelContextsWindows.utils import get_max_n_shots, filter_extremely_long_samples, plot_results_graph
