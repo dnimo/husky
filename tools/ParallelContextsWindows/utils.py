@@ -9,7 +9,7 @@ from numpy import typing as npt
 from torch import distributed as dist
 from transformers import PreTrainedTokenizerBase, LlamaTokenizer
 
-from __init__ import TEXT_BETWEEN_SHOTS, N_TOKENS, PROMPTS
+from .constants import TEXT_BETWEEN_SHOTS, N_TOKENS, PROMPTS
 
 _logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format='%(message)s')

@@ -8,7 +8,7 @@ from transformers import GPTNeoXConfig
 from transformers.models.gpt_neox.modeling_gpt_neox import GPTNeoXAttention, apply_rotary_pos_emb, GPTNeoXLayer, \
     GPTNeoXModel, GPTNeoXForCausalLM
 
-from pcw_wrapper import generate_pcw_position_ids
+from .pcw_wrapper import generate_pcw_position_ids
 
 """
 The following code is mainly copy+paste from the original modelling_llama.py:
@@ -19,14 +19,14 @@ and model (so that the correct forward function would be called).
 
 
 class GPTNeoXForCausalLMPCW(GPTNeoXForCausalLM, ABC):
-    _no_split_modules = ["LlamaDecoderLayerPCW"]
+    _no_split_modules = ["GPTNeoXLayerPCW"]
 
     def __init__(self, config: GPTNeoXConfig):
         super(GPTNeoXForCausalLM, self).__init__(config)
         # using our model variant:
-        self.model = GPTNeoXModelPCW(config)
+        self.gpt_neox = GPTNeoXModelPCW(config)
 
-        self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
+        self.emded_out = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -44,13 +44,13 @@ class GPTNeoXForCausalLMPCW(GPTNeoXForCausalLM, ABC):
          attention_mask:
             concatenation of windows + task tokens attentions masks.
 
-         Note (past_key_values vs windows_key_values):
+         Note (past_key_values vs. windows_key_values):
              In the first token generation, past_key_values is None while windows_key_values contains the combined past
-             key values of context windows. During following generations, past_key_values is the concatenation of
-             windows_key_values + previous generations. Thus, windows_key_values is practically ignored.
+             key values of context windows. During the following generations, past_key_values is the concatenation of
+             windows_key_values + previous generations. Thus, windows_key_values are practically ignored.
              """
 
-        # only last token for inputs_ids if past_key_values is defined in kwargs
+        # only the last token for inputs_ids if past_key_values is defined in kwargs
         if past_key_values:
             input_ids = input_ids[:, -1:]
         attention_mask = kwargs.get("attention_mask")
@@ -82,95 +82,92 @@ class GPTNeoXModelPCW(GPTNeoXModel, ABC):
 
     def __init__(self, config: GPTNeoXConfig):
         super(GPTNeoXModel, self).__init__(config)
-        self.padding_idx = config.pad_token_id
-        self.vocab_size = config.vocab_size
 
-        self.embed_tokens = nn.Embedding(config.vocab_size, config.hidden_size, self.padding_idx)
+        self.embed_in = nn.Embedding(config.vocab_size, config.hidden_size, config.padding_idx)
+        # self.emb_dropout = nn.Dropout(config.hidden_dropout)
         # using the alternative decoder layer:
-        self.layers = nn.ModuleList([LlamaDecoderLayerPCW(config) for _ in range(config.num_hidden_layers)])
-        self.norm = LlamaRMSNorm(config.hidden_size, eps=config.rms_norm_eps)
+        self.layers = nn.ModuleList([GPTNeoXLayerPCW(config) for _ in range(config.num_hidden_layers)])
+        self.final_layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
+        # self._use_flash_attention_2 = config._attn_implementation == "flash_attention_2"
 
         self.gradient_checkpointing = False
         # Initialize weights and apply final processing
         self.post_init()
 
 
-class LlamaDecoderLayerPCW(LlamaDecoderLayer):
-    def __init__(self, config: LlamaConfig):
+class GPTNeoXLayerPCW(GPTNeoXLayer):
+    def __init__(self, config: GPTNeoXConfig):
         super().__init__(config)
         # overriding attention:
-        self.self_attn = LlamaAttentionPCW(config=config)
+        self.attention = GPTNeoXAttentionPCW(config=config)
 
 
 class GPTNeoXAttentionPCW(GPTNeoXAttention):
     # we have to override the forward attention due to the rotary embeddings caching mechanism
     def forward(
-            self,
-            hidden_states: torch.Tensor,
-            attention_mask: Optional[torch.Tensor] = None,
-            position_ids: Optional[torch.LongTensor] = None,
-            past_key_value: Optional[Tuple[torch.Tensor]] = None,
-            output_attentions: bool = False,
-            use_cache: bool = False,
-    ) -> Tuple[torch.Tensor, Optional[torch.Tensor], Optional[Tuple[torch.Tensor]]]:
-        bsz, q_len, _ = hidden_states.size()
+        self,
+        hidden_states: torch.FloatTensor,
+        attention_mask: torch.FloatTensor,
+        position_ids: torch.LongTensor,
+        head_mask: Optional[torch.FloatTensor] = None,
+        layer_past: Optional[Tuple[torch.Tensor]] = None,
+        use_cache: Optional[bool] = False,
+        output_attentions: Optional[bool] = False,
+        padding_mask: Optional[torch.Tensor] = None,
+    ):
+        has_layer_past = layer_past is not None
 
-        query_states = self.q_proj(hidden_states).view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        key_states = self.k_proj(hidden_states).view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
-        value_states = self.v_proj(hidden_states).view(bsz, q_len, self.num_heads, self.head_dim).transpose(1, 2)
+        # Compute QKV
+        # Attention heads [batch, seq_len, hidden_size]
+        #   --> [batch, seq_len, (np * 3 * head_size)]
+        qkv = self.query_key_value(hidden_states)
 
-        kv_seq_len = key_states.shape[-2]
-        if past_key_value is not None:
-            kv_seq_len += past_key_value[0].shape[-2]
+        # [batch, seq_len, (num_heads * 3 * head_size)]
+        #   --> [batch, seq_len, num_heads, 3 * head_size]
+        new_qkv_shape = qkv.size()[:-1] + (self.num_attention_heads, 3 * self.head_size)
+        qkv = qkv.view(*new_qkv_shape)
 
+        # [batch, seq_len, num_attention_heads, 3 * head_size] --> 3 [batch, num_attention_heads, seq_len, head_size]
+        query = qkv[..., : self.head_size].permute(0, 2, 1, 3)
+        key = qkv[..., self.head_size : 2 * self.head_size].permute(0, 2, 1, 3)
+        value = qkv[..., 2 * self.head_size :].permute(0, 2, 1, 3)
+
+        # Compute rotary embeddings on rotary_ndims
+        query_rot = query[..., : self.rotary_ndims]
+        query_pass = query[..., self.rotary_ndims :]
+        key_rot = key[..., : self.rotary_ndims]
+        key_pass = key[..., self.rotary_ndims :]
+
+        # Compute token offset for rotary embeddings (when decoding)
+        seq_len = key.shape[-2]
+        if has_layer_past:
+            seq_len += layer_past[0].shape[-2]
         # *** changes to the original code to accommodate PCW:
         # making sure that the model generates rotary embeddings in the correct length:
-        seq_len = kv_seq_len if position_ids is None else int(torch.max(position_ids) + 1)
-        cos, sin = self.rotary_emb(value_states, seq_len=seq_len)
+        seq_len = seq_len if position_ids is None else int(torch.max(position_ids) + 1)
+        cos, sin = self.rotary_emb(value, seq_len=seq_len)
         # *** End of changes due to PCW, the rest of the function is copy-paste from the original transformer package.
+        query, key = apply_rotary_pos_emb(query_rot, key_rot, cos, sin, position_ids)
+        query = torch.cat((query, query_pass), dim=-1)
+        key = torch.cat((key, key_pass), dim=-1)
 
-        query_states, key_states = apply_rotary_pos_emb(query_states, key_states, cos, sin, position_ids)
-        # [bsz, nh, t, hd]
+        # Cache QKV values
+        if has_layer_past:
+            past_key = layer_past[0]
+            past_value = layer_past[1]
+            key = torch.cat((past_key, key), dim=-2)
+            value = torch.cat((past_value, value), dim=-2)
+        present = (key, value) if use_cache else None
 
-        if past_key_value is not None:
-            # reuse k, v, self_attention
-            key_states = torch.cat([past_key_value[0], key_states], dim=2)
-            value_states = torch.cat([past_key_value[1], value_states], dim=2)
+        # Compute attention
+        attn_output, attn_weights = self._attn(query, key, value, attention_mask, head_mask)
 
-        past_key_value = (key_states, value_states) if use_cache else None
+        # Reshape outputs
+        attn_output = self._merge_heads(attn_output, self.num_attention_heads, self.head_size)
+        attn_output = self.dense(attn_output)
 
-        attn_weights = torch.matmul(query_states, key_states.transpose(2, 3)) / math.sqrt(self.head_dim)
+        outputs = (attn_output, present)
+        if output_attentions:
+            outputs += (attn_weights,)
 
-        if attn_weights.size() != (bsz, self.num_heads, q_len, kv_seq_len):
-            raise ValueError(
-                f"Attention weights should be of size {(bsz * self.num_heads, q_len, kv_seq_len)}, but is"
-                f" {attn_weights.size()}"
-            )
-
-        if attention_mask is not None:
-            if attention_mask.size() != (bsz, 1, q_len, kv_seq_len):
-                raise ValueError(
-                    f"Attention mask should be of size {(bsz, 1, q_len, kv_seq_len)}, but is {attention_mask.size()}"
-                )
-            attn_weights = attn_weights + attention_mask
-            attn_weights = torch.max(attn_weights, torch.tensor(torch.finfo(attn_weights.dtype).min))
-
-        # upcast attention to fp32
-        attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query_states.dtype)
-        attn_output = torch.matmul(attn_weights, value_states).to(query_states.dtype)
-
-        if attn_output.size() != (bsz, self.num_heads, q_len, self.head_dim):
-            raise ValueError(
-                f"`attn_output` should be of size {(bsz, self.num_heads, q_len, self.head_dim)}, but is"
-                f" {attn_output.size()}"
-            )
-
-        attn_output = attn_output.transpose(1, 2)
-        attn_output = attn_output.reshape(bsz, q_len, self.hidden_size)
-
-        attn_output = self.o_proj(attn_output)
-
-        if not output_attentions:
-            attn_weights = None
-
-        return attn_output, attn_weights, past_key_value
+        return outputs

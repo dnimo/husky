@@ -4,8 +4,8 @@ import numpy as np
 import torch
 from transformers import PreTrainedTokenizerBase, PreTrainedModel
 
-from logits_processor import RestrictiveTokensLogitsProcessor
-from utils import n_tokens_in_prompt
+from .logits_processor import RestrictiveTokensLogitsProcessor
+from .utils import n_tokens_in_prompt
 
 
 def combine_past_key_values(past_lst: List[Tuple[Tuple[torch.Tensor]]], longest_window_id: int) -> \
