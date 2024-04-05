@@ -119,14 +119,32 @@ class BasicTokenizer(object):
         """
         raise NotImplementedError
 
-    def _tokenize(self, text):
-        """basic tokenize function
-        """
-        raise NotImplementedError
-
 
 class Mecab(BasicTokenizer):
-    def _tokenize(self, text):
-        words = myMeCab.tokenize(text=text, stemmer=False)
+    def tokenize(self, text, stem=False, maxlen: int = 512):
+        words = myMeCab.tokenize(text=text, stemmer=stem)
 
         return words
+
+class spTokenizer(BasicTokenizer):
+    # TODO: implement spTokenizer
+
+    def __init__(self, sp_model):
+        self.sp_model = sp_model
+        self._token_pad = '[PAD]'
+        self._token_unk = '[UNK]'
+        self._token_mask = '[MASK]'
+        self._token_start = '[CLS]'
+        self._token_end = '[SEP]'
+
+    def _tokenize(self, text):
+        return self.sp_model.EncodeAsPieces(text)
+
+    def token_to_id(self, token):
+        return self.sp_model.PieceToId(token)
+
+    def id_to_token(self, i):
+        return self.sp_model.IdToPiece(i)
+
+    def decode(self, ids):
+        return self.sp_model.DecodeIds(ids)

@@ -1,6 +1,6 @@
 import abc
-import bleu
-import rouge_scorer
+from . import bleu
+from . import rouge_scorer
 
 
 class Valuations(abc.ABC):
@@ -18,16 +18,9 @@ class Bleu(Valuations):
 
 
 class Rouge(Valuations):
-    def __init__(self, rouge_type, use_stemmer=False, split_summarise=False, tokenizer=None):
-        self.tokenizer = tokenizer
-        self.rouge_type = rouge_type
-        self.use_stemmer = use_stemmer
-        self.split_summarise = split_summarise
 
     def valuate(self, target, prediction):
-        return rouge_scorer.RougeScorer(rouge_types=self.rouge_type, use_stemmer=self.use_stemmer,
-                                        split_summaries=self.split_summarise, tokenizer=self.tokenizer).score(
+        return rouge_scorer.RougeScorer(rouge_types=['rouge1', 'rouge2', 'rougeL']).score(
             target=target,
             prediction=prediction
-
         )

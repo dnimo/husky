@@ -12,8 +12,8 @@ import re
 import numpy as np
 from absl import logging
 import six
-from tools.Tokenizers import tokenizers
-import scoring
+from tools.tokenizers import Mecab, BasicTokenizer
+from . import scoring
 import nltk
 
 
@@ -26,7 +26,7 @@ class RougeScorer(scoring.BaseScorer):
                           'The quick brown dog jumps on the log.')
   """
 
-    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer=None):
+    def __init__(self, rouge_types, use_stemmer=False, split_summaries=False, tokenizer: str = "MeCab"):
         """Initializes a new RougeScorer.
 
     Valid rouge types that can be computed are:
@@ -46,13 +46,14 @@ class RougeScorer(scoring.BaseScorer):
     """
 
         self.rouge_types = rouge_types
+        self.use_stemmer = use_stemmer
+        self._split_summaries = split_summaries
         if tokenizer == "MeCab":
-            self._tokenizer = tokenizers.MeCabTokenizer(use_stemmer)
+            self._tokenizer = Mecab()
         else:
-            self._tokenizer = tokenizers.DefaultTokenizer(use_stemmer)
+            self._tokenizer = BasicTokenizer()
             logging.debug("Using default tokenizer.")
 
-        self._split_summaries = split_summaries
 
     def score_multi(self, targets, prediction):
         """Calculates rouge scores between targets and prediction.
@@ -95,8 +96,8 @@ class RougeScorer(scoring.BaseScorer):
             target_tokens = None
             prediction_tokens = None
         else:
-            target_tokens = self._tokenizer.tokenize(target)
-            prediction_tokens = self._tokenizer.tokenize(prediction)
+            target_tokens = self._tokenizer.tokenize(target, self.use_stemmer)
+            prediction_tokens = self._tokenizer.tokenize(prediction, self.use_stemmer)
         result = {}
 
         for rouge_type in self.rouge_types:
