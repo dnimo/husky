@@ -6,10 +6,9 @@ import torch.nn as nn
 
 from torch.optim import Adam
 from torch.utils.data import DataLoader
-from tools.Model.data.mlm_dataset import *
+from tools.dataset.mlm_dataset import *
 from tools.Model.layers.Roberta_mlm import RobertaMlm
-from datasets import load_dataset, Dataset
-
+from datasets import load_dataset
 
 window_size = 510
 def chunk_examples(examples):

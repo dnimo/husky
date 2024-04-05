@@ -6,7 +6,7 @@ New feature -> merge blue to medinfo_tools package make it eazsy to use.
 from __future__ import print_function, division
 
 import numpy as np
-from tools.Tokenizers import tokenizers
+from tools.tokenizers import Mecab
 
 
 class BLEU:
@@ -19,7 +19,7 @@ class BLEU:
         @param reference = "text" reference text
         @param bleu result of computing format [candidate_1_result, candidate_2_result]
         """
-        mytokenizer = tokenizers.MeCabTokenizer()
+        mytokenizer = Mecab()
         candidate_tokens = mytokenizer.tokenize(candidate)
         reference_tokens = mytokenizer.tokenize(reference)
         r, c = 0, 0

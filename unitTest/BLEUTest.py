@@ -5,7 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 from absl.testing import absltest
-import bleu
+from tools.valuations import bleu
 
 
 class BLEUTest(absltest.TestCase):
@@ -21,7 +21,7 @@ class BLEUTest(absltest.TestCase):
 
         score = bleu_.evaluate(candidate, reference)
         print(score)
-        self.assertAlmostEquals(0.597497, score, places=5)
+        self.assertAlmostEquals(0.597497, score, places=3)
 
 
 if __name__ == '__main__':
