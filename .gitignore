@@ -5,3 +5,5 @@
 /.DS_Store
 /.vscode/
 **__pycache__**
+/data/tokenizer/
+/data/RoBERTa_Large_tokenizer/

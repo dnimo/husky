@@ -1,9 +1,9 @@
-from Model.base.RoBERTa.common.tokenizers import SpTokenizer
-from Model.base.RoBERTa.pretrain_config import *
+from tools.tokenizers.bytepiece import Tokenizer
+from tools.Model.pretrain_config import *
 
 
 def check_srcdata_and_vocab(target_path):
-    segment = SpTokenizer
+    segment = Tokenizer
     f1 = open(target_path, 'r', encoding='utf-8')
     f2 = open(VocabPath, 'r', encoding='utf-8')
     local_tokens = []
