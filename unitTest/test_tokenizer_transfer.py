@@ -1,7 +1,7 @@
 import unittest
 import sentencepiece as spm
 from sentencepiece import sentencepiece_model_pb2 as sp_pd2_model
-from transformers import GPTNeoXTokenizerFast
+from transformers import AutoTokenizer
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):
@@ -15,7 +15,7 @@ class MyTestCase(unittest.TestCase):
 
         #load calm tokenizer
 
-        calmTokenizer = GPTNeoXTokenizerFast.from_pretrained("cyberagent/open-calm-7b")
+        calmTokenizer = AutoTokenizer.from_pretrained("cyberagent/open-calm-7b")
         calmTokenizer_spm = sp_pd2_model.ModelProto()
         calmTokenizer_spm.ParseFromString(calmTokenizer.sp_model.serialized_model_proto())
 
@@ -42,8 +42,8 @@ class MyTestCase(unittest.TestCase):
         with open("Newtokenizer/Newtokenizer.model", "wb") as f:
             f.write(calmTokenizer_spm.SerializeToString())
 
-    newTokenizer = GPTNeoXTokenizerFast("Newtokenizer/Newtokenizer.model")
-    newTokenizer.save_pretrained("Newtokenizer")
+    # newTokenizer = AutoTokenizer.from_pretrained("Newtokenizer/")
+    # newTokenizer.save_pretrained("Newtokenizer")
 
 
 

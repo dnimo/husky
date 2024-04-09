@@ -6,7 +6,7 @@
         "depends": [],
         "name": "tools.cython.faster",
         "sources": [
-            "/Users/kokei/workspace/husky/tools/cython/faster.pyx"
+            "faster.pyx"
         ]
     },
     "module_name": "tools.cython.faster"
