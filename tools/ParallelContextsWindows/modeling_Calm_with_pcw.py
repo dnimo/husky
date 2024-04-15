@@ -20,16 +20,23 @@ and model (so that the correct forward function would be called).
 
 class GPTNeoXForCausalLMPCW(GPTNeoXForCausalLM, ABC):
     _no_split_modules = ["GPTNeoXLayerPCW"]
+    _tied_weights_keys = ["embed_out.weight"]
 
     def __init__(self, config: GPTNeoXConfig):
         super(GPTNeoXForCausalLM, self).__init__(config)
         # using our model variant:
         self.gpt_neox = GPTNeoXModelPCW(config)
 
-        self.emded_out = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
+        self.embed_out = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
 
         # Initialize weights and apply final processing
         self.post_init()
+
+    def get_output_embeddings(self):
+        return self.embed_out
+
+    def set_output_embeddings(self, new_embeddings):
+        self.embed_out = new_embeddings
 
     def prepare_inputs_for_generation(self,
                                       input_ids: torch.LongTensor,
@@ -83,7 +90,7 @@ class GPTNeoXModelPCW(GPTNeoXModel, ABC):
     def __init__(self, config: GPTNeoXConfig):
         super(GPTNeoXModel, self).__init__(config)
 
-        self.embed_in = nn.Embedding(config.vocab_size, config.hidden_size, config.padding_idx)
+        self.embed_in = nn.Embedding(config.vocab_size, config.hidden_size)
         # self.emb_dropout = nn.Dropout(config.hidden_dropout)
         # using the alternative decoder layer:
         self.layers = nn.ModuleList([GPTNeoXLayerPCW(config) for _ in range(config.num_hidden_layers)])
