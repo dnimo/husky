@@ -1,5 +1,5 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM
-import torch
+from transformers.models.llama.modeling_llama import LlamaConfig, repeat_kv
 
 model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf")
 

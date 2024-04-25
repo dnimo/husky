@@ -6,8 +6,8 @@ import torch
 import transformers
 
 from einops import rearrange
-from tools.flash_attn import flash_attn_varlen_qkvpacked_func, flash_attn_varlen_func
-from tools.flash_attn.bert_padding import unpad_input, pad_input
+from flash_attn import flash_attn_varlen_qkvpacked_func, flash_attn_varlen_func
+from flash_attn.bert_padding import unpad_input, pad_input
 
 
 group_size_ratio = 1/4
