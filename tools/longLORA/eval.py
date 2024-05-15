@@ -123,7 +123,7 @@ def main(args):
     data = {'val': np.memmap(args.data_path, dtype=np.uint16, mode='r')}
 
     print(f"Num validation tokens: {len(data['val'])}")
-    print("data path", args.data_path)
+    print("dataUnits path", args.data_path)
     print("base model", args.base_model)
     print("peft model", args.peft_model)
 

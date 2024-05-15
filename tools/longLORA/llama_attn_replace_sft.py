@@ -86,7 +86,7 @@ def forward_flashattn(
     # Flash attention codes from
     # https://github.com/HazyResearch/flash-attention/blob/main/flash_attn/flash_attention.py
 
-    # transform the data into the format required by flash attention
+    # transform the dataUnits into the format required by flash attention
     qkv = torch.stack(
         [query_states, key_states, value_states], dim=2
     )  # [bsz, nh, 3, q_len, hd]
@@ -197,7 +197,7 @@ def forward_flashattn_full(
     # Flash attention codes from
     # https://github.com/HazyResearch/flash-attention/blob/main/flash_attn/flash_attention.py
 
-    # transform the data into the format required by flash attention
+    # transform the dataUnits into the format required by flash attention
     qkv = torch.stack(
         [query_states, key_states, value_states], dim=2
     )  # [bsz, nh, 3, q_len, hd]

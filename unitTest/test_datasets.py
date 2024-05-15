@@ -2,8 +2,8 @@ from datasets import load_dataset, Dataset
 import pandas as pd
 
 # 加载数据集
-dataset = load_dataset("json", data_files="./../data/sample.json")
-dataset2 = load_dataset("json", data_files="./../data/sample2.json")
+dataset = load_dataset("json", data_files="./../dataUnits/sample.json")
+dataset2 = load_dataset("json", data_files="./../dataUnits/sample2.json")
 
 # 转换为 pandas DataFrame
 df1 = pd.DataFrame(dataset['train'])

@@ -7,7 +7,7 @@ import ipadic
 
 file_path = r'C:\Users\KuoChing\workspace\husky\data\sample.txt'
 
-# Load data
+# Load dataUnits
 
 def load_data(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:

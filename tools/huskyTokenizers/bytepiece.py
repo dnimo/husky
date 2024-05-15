@@ -2,7 +2,7 @@
 # Reference 1: https://kexue.fm/archives/9752
 # Reference 2: https://kexue.fm/archives/9768
 
-from tools.cython import faster
+from tools.huskyTokenizers import faster
 import numpy as np
 import re, json, unicodedata
 from itertools import chain

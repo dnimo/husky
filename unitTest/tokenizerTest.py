@@ -1,5 +1,5 @@
 import unittest
-from tools.tokenizers import MeCabTokenizer
+from tools.huskyTokenizers import MeCabTokenizer
 
 class MyTestCase(unittest.TestCase):
     def test_something(self):

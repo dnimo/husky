@@ -1,4 +1,4 @@
-from tools.tokenizers.bytepiece import Tokenizer
+from tools.huskyTokenizers.bytepiece import Tokenizer
 from tools.Model.pretrain_config import *
 
 

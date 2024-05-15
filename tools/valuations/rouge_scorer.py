@@ -10,8 +10,8 @@ import re
 
 import numpy as np
 import six
-from tools.tokenizers.MeCab import MeCabTokenizer
-from tools.tokenizers.bytepiece import Tokenizer as BytePieceTokenizer
+from tools.huskyTokenizers.MeCab import MeCabTokenizer
+from tools.huskyTokenizers.bytepiece import Tokenizer as BytePieceTokenizer
 from . import scoring
 import nltk
 
@@ -36,7 +36,7 @@ class RougeScorer(scoring.BaseScorer):
       rouge_types: A list of rouge types to calculate.
       use_stemmer: Bool indicating whether Porter stemmer should be used to
         strip word suffixes to improve matching. This arg is used in the
-        DefaultTokenizer, but other tokenizers might or might not choose to
+        DefaultTokenizer, but other huskyTokenizers might or might not choose to
         use this.
       Split_summaries: whether to add newlines between sentences for rougeLsum
       tokenizer: Tokenizer object which has a tokenized() method. The default method is MeCab.

@@ -179,7 +179,7 @@ class EvalArguments:
     )
     data_path: str = field(
         default="./test.bin",
-        metadata={"help": "test data path"},
+        metadata={"help": "test dataUnits path"},
     )
     cache_dir: Optional[str] = field(default="./.cache")
     progress_bar_fresh_rate: int = field(
@@ -248,7 +248,7 @@ def run_eval(args: EvalArguments):
         gpu_id=gpu_id)
 
     if evaluator.is_first_device():
-        print("data path", args.data_path)
+        print("dataUnits path", args.data_path)
         print("base model", args.base_model)
         print("peft model", args.peft_model)
         print(f"Num validation tokens: {dataset.num_tokens()}, Num validation examples: {len(dataset)}")

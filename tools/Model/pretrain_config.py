@@ -10,9 +10,9 @@ VocabPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/kuh
 TokenizerPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/kuhpTokenizer/40000_vocab/bert_bpe_vocab_40000.model'
 
 # ## mlm模型文件路径 ## #
-CorpusPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/data/del_none_data_for_train_tokenizer.txt'
-# samples = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/data/sample.txt'
-PronunciationPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/tools/Model/base/RoBERTa/data/char_meta.json'
+CorpusPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/dataUnits/del_none_data_for_train_tokenizer.txt'
+# samples = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/dataUnits/sample.txt'
+PronunciationPath = '/home/jovyan/mi-drive/medinfo_lab/Research_Projects/zhang/Husky/tools/Model/base/RoBERTa/dataUnits/char_meta.json'
 
 # Debug开关
 Debug = False
@@ -84,10 +84,10 @@ MedicineLength = 32
 # ## NER训练调试参数结束 ## #
 
 # ## ner模型文件路径 ## #
-NerSourcePath = '../../data/src_data/ner_src_data.txt'
-NerCorpusPath = '../../data/train_data/ner_train.txt'
-NerTestPath = '../../data/test_data/ner_test.txt'
-Class2NumFile = '../../data/train_data/c2n.pickle'
+NerSourcePath = '../../dataUnits/src_data/ner_src_data.txt'
+NerCorpusPath = '../../dataUnits/train_data/ner_train.txt'
+NerTestPath = '../../dataUnits/test_data/ner_test.txt'
+Class2NumFile = '../../dataUnits/train_data/c2n.pickle'
 NerFinetunePath = '../../checkpoint/finetune/ner_trained_%s.model' % MedicineLength
 
 # ## NER通用参数 ## #

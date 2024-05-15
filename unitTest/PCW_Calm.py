@@ -6,7 +6,7 @@ class MyTestCase(unittest.TestCase):
     def setUp(self):
         self.model = 'cyberagent/open-calm-small'
         self.cache_dir = './cache'
-        self.dataset = 'data/samples.txt'
+        self.dataset = 'dataUnits/samples.txt'
         self.output_dir = './output'
         self.right_indentation = False
         self.n_windows = 1

@@ -123,7 +123,7 @@ class CharFuncs(object):
 
     def shape_distance(self, char1, char2, safe=True, as_tree=False):
         """
-        >>> c = CharFuncs('data/char_meta_demo.txt')
+        >>> c = CharFuncs('dataUnits/char_meta_demo.txt')
         >>> c.shape_distance('田', '由')
         1
         >>> c.shape_distance('牛', '午')
@@ -175,7 +175,7 @@ class CharFuncs(object):
 
     def pronunciation_distance(self, char1, char2):
         # """
-        # >>> c = CharFuncs('data/char_meta_demo.txt')
+        # >>> c = CharFuncs('dataUnits/char_meta_demo.txt')
         # >>> c.pronunciation_distance('田', '由')
         # 3.4
         # >>> c.pronunciation_distance('牛', '午')
@@ -291,7 +291,7 @@ class CharFuncs(object):
 
     def pronunciation_similarity(self, char1, char2):
         # """
-        # >>> c = CharFuncs('data/chchar_meta.txt')
+        # >>> c = CharFuncs('dataUnits/chchar_meta.txt')
         # >>> c.pronunciation_similarity('牛', '午')
         # 0.27999999999999997
         # >>> c.pronunciation_similarity('由', '田')
@@ -427,7 +427,7 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    c = CharFuncs('data/chchar_meta.txt')
+    c = CharFuncs('dataUnits/chchar_meta.txt')
     if not args.ted:
         for i, c1 in enumerate(args.multiargs):
             for c2 in args.multiargs[i:]:

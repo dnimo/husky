@@ -27,7 +27,7 @@ DEFAULT_UNK_TOKEN = "<unk>"
 
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--base_model', type=str, default="/data/pretrained-models/llama-7b-hf")
+    parser.add_argument('--base_model', type=str, default="/dataUnits/pretrained-models/llama-7b-hf")
     parser.add_argument('--peft_model', type=str, default=None, help='')
     parser.add_argument('--context_size', type=int, default=-1, help='context size during fine-tuning')
     parser.add_argument('--save_path', type=str, default=None, help='')

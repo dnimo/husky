@@ -7,6 +7,8 @@ import re
 import sys
 from collections import defaultdict
 
+from Cython import unicode
+
 _open_ = open
 is_py2 = six.PY2
 
@@ -42,7 +44,7 @@ def strQ2B(ustring):
         # 全角字符（除空格）根据关系转化
         elif (inside_code >= 65281 and inside_code <= 65374):
             inside_code -= 65248
-        rstring += unichr(inside_code)
+        rstring += six.unichr(inside_code)
     return rstring
 
 

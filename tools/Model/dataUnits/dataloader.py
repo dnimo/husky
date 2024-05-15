@@ -1,0 +1,34 @@
+from datasets import load_dataset, Dataset
+from transformers import PreTrainedTokenizer
+
+
+# Path: tools/Model/dataUnits/dataLoader.py
+
+class dataloader:
+    def __init__(self, dataset: Dataset, batch_size: int, max_length: int, tokenizer: PreTrainedTokenizer, model_type: str):
+        self.dataset = dataset
+        self.batch_size = batch_size
+        self.max_length = max_length
+        self.tokenizer = tokenizer
+
+    def tokenize_fn(self, example):
+        context_length = self.max_length
+        outputs = self.tokenizer(
+            self.tokenizer.eos_token.join(example["text"]),
+            truncation=True,
+            return_tensors="pt",
+            padding="max_length",
+            max_length=context_length + 1,
+            add_special_tokens=True,
+            paddding="max_length",
+            return_attention_mask=True,
+        )
+        return {"input_ids": outputs["input_ids"][:-1], "attention_mask": outputs["attention_mask"][:-1]}
+
+    def format_examples(self, examples):
+        chunked_examples = []
+        for example in examples:
+            text = example["text"]
+            for i in range(0, len(text), self.max_length):
+                chunked_examples.append({"text": text[i : i + self.max_length]})
+        return chunked_examples

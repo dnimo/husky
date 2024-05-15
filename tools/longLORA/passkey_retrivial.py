@@ -18,11 +18,8 @@ import math
 import torch
 import argparse
 import random
-import numpy as np
 from numpy import random
-from tqdm import tqdm
 import transformers
-from peft import PeftModel
 from llama_attn_replace import replace_llama_attn
 
 
