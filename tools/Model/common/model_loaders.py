@@ -18,7 +18,7 @@ def load_tokenizer(model_name: str) -> PreTrainedTokenizerBase:
     return tokenizer
 
 
-def load_pcw_wrapper(model_name: str, cache_dir: str = None,
+def load_pcw_wrapper(model_name: str, cache_dir: str = None, task: str = None,
                      right_indentation: bool = False, n_windows: int = 1) -> PCWModelWrapper:
     validate_model_name(model_name)
     config = AutoConfig.from_pretrained(model_name)
@@ -43,4 +43,4 @@ def load_pcw_wrapper(model_name: str, cache_dir: str = None,
     if not multi_gpus:
         model = model.to(device)
 
-    return PCWModelWrapper(model, tokenizer, device, context_window_size, right_indentation)
+    return PCWModelWrapper(model, tokenizer, task, device, context_window_size, right_indentation)

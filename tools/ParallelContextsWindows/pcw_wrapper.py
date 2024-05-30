@@ -93,19 +93,34 @@ class PCWModelWrapper:
         assert (contexts is None) != (
                 contexts_cache is None), "pcw_generate should work with contexts or cache, not with both!"
         cache = contexts_cache or self.get_contexts_cache(contexts)
-        encoded_task_text = self.tokenizer(task_text, add_special_tokens=False, return_tensors='pt').to(self.device)
+        encoded_task_text = self.tokenizer(task_text, return_tensors='pt').to(self.device)
         if restrictive_logit_preprocessor:
             restrictive_logit_preprocessor.update_new_prompt_length_to_skip(encoded_task_text['input_ids'].shape[1])
             kwargs['logits_processor'] = [restrictive_logit_preprocessor]
-        combined_attention_mask = torch.cat((cache['past_attention_mask'], encoded_task_text['attention_mask']),
+        attention_mask = torch.cat((cache['past_attention_mask'], encoded_task_text['attention_mask']),
                                             dim=1).to(self.device)
-        with torch.no_grad():
-            res = self.model.generate(input_ids=encoded_task_text['input_ids'],
-                                      attention_mask=combined_attention_mask,
-                                      windows_key_values=cache['past_key_values'],
-                                      max_window_size=cache['max_window_size'],
-                                      sum_windows_size=cache['sum_windows_size'],
-                                      pad_token_id=self.tokenizer.eos_token_id,
-                                      **kwargs)[0]
-        res = res[:-1] if res[-1] == self.tokenizer.eos_token_id else res
-        return self.tokenizer.decode(res[encoded_task_text['input_ids'].shape[1]:])
+        past_key_values = cache['past_key_values']
+        preds = []
+        n=cache['past_attention_mask'].shape[0]
+        input_ids = encoded_task_text['input_ids']
+
+        for i in range(800):
+            outputs = self.model(input_ids=input_ids,
+                                    attention_mask=attention_mask,
+                                    past_key_values=past_key_values,
+                                    position_ids=generate_pcw_position_ids(attention_mask,
+                                                                        cache['max_window_size'],
+                                                                        cache['past_key_values'],
+                                                                        cache['sum_windows_size'],
+                                                                        None),
+                                     **kwargs)
+            past_key_values = outputs.past_key_values
+            new_token = torch.multinomial(outputs.logits, num_samples=1).squeeze(1)
+            res = self.tokenizer.batch_decode(new_token, skip_special_tokens=True)
+            print(attention_mask.shape)
+            input_ids = new_token
+            attention_mask = torch.cat([attention_mask, torch.ones(n, 1, device=self.device)], dim=-1)
+            # print(res, flush=True, end="")
+            preds.append(res)
+
+        return preds

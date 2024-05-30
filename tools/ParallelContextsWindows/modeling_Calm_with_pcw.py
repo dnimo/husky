@@ -1,4 +1,3 @@
-import math
 from abc import ABC
 from typing import Optional, Tuple, Dict
 
@@ -84,18 +83,18 @@ class GPTNeoXModelPCW(GPTNeoXModel, ABC):
     Transformer decoder consisting of *config.num_hidden_layers* layers. Each layer is a [`LlamaDecoderLayer`]
 
     Args:
-        config: LlamaConfig
+        config: GPTNeoXConfig
     """
 
     def __init__(self, config: GPTNeoXConfig):
         super(GPTNeoXModel, self).__init__(config)
 
         self.embed_in = nn.Embedding(config.vocab_size, config.hidden_size)
-        # self.emb_dropout = nn.Dropout(config.hidden_dropout)
+        self.emb_dropout = nn.Dropout(config.hidden_dropout)
         # using the alternative decoder layer:
         self.layers = nn.ModuleList([GPTNeoXLayerPCW(config) for _ in range(config.num_hidden_layers)])
         self.final_layer_norm = nn.LayerNorm(config.hidden_size, eps=config.layer_norm_eps)
-        # self._use_flash_attention_2 = config._attn_implementation == "flash_attention_2"
+        self._use_flash_attention_2 = config._attn_implementation == "flash_attention_2"
 
         self.gradient_checkpointing = False
         # Initialize weights and apply final processing

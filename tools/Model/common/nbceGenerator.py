@@ -35,6 +35,7 @@ def generate(max_tokens, tokenizer, model, device, batch):
         logits = outputs.logits[:, -1]
         logits = logits - logits.logsumexp(dim=-1, keepdims=True)
         logits = processors(input_ids, logits)
+        print(logits)
         entropy = -(logits.exp() * logits.clip(-100, 0)).sum(dim=-1)
         if i > 0:
             entropy[k] -= eta

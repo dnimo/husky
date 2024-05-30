@@ -3,7 +3,6 @@ import os
 from typing import List, Tuple
 
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
 from numpy import typing as npt
 from torch import distributed as dist
@@ -50,22 +49,5 @@ def save_results(dataset: str, n_shots: List[int], results: npt.NDArray[int], ou
         os.makedirs(output_dir, exist_ok=True)
         output_path = f"{output_dir}/{dataset}_n_shots_results_{'_'.join([str(i) for i in n_shots])}.npy"
         np.save(output_path, results)
-
-
-def encode_labels(tokenizer: PreTrainedTokenizerBase, labels: List[str]) -> List[List[int]]:
-    if isinstance(tokenizer, LlamaTokenizer):
-        # sentence piece - adds a space at the beginning of the sentence
-        return [tokenizer.encode(f'{label.lstrip()}', add_special_tokens=False) for label in labels]
-
-    return [tokenizer.encode(f' {label.lstrip()}', add_special_tokens=False) for label in labels]
-
-
-def encode_stop_seq(tokenizer: PreTrainedTokenizerBase, stop_seq: str) -> int:
-    stop_seq_token_id = tokenizer.encode(stop_seq, add_special_tokens=False)
-    if isinstance(tokenizer, LlamaTokenizer):
-        assert len(stop_seq_token_id) == 2
-    else:
-        assert len(stop_seq_token_id) == 1
-    return stop_seq_token_id[-1]
 
 
