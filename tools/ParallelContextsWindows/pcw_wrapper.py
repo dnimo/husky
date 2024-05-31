@@ -99,28 +99,28 @@ class PCWModelWrapper:
             kwargs['logits_processor'] = [restrictive_logit_preprocessor]
         attention_mask = torch.cat((cache['past_attention_mask'], encoded_task_text['attention_mask']),
                                             dim=1).to(self.device)
-        past_key_values = cache['past_key_values']
         preds = []
-        n=cache['past_attention_mask'].shape[0]
-        input_ids = encoded_task_text['input_ids']
+        past_key_values = cache['past_key_values']
+        n = encoded_task_text['input_ids'].shape[0]
 
         for i in range(800):
-            outputs = self.model(input_ids=input_ids,
-                                    attention_mask=attention_mask,
-                                    past_key_values=past_key_values,
-                                    position_ids=generate_pcw_position_ids(attention_mask,
-                                                                        cache['max_window_size'],
-                                                                        cache['past_key_values'],
-                                                                        cache['sum_windows_size'],
-                                                                        None),
-                                     **kwargs)
+            outputs = self.model(
+                input_ids=encoded_task_text['input_ids'],
+                attention_mask=attention_mask,
+                return_dict=True,
+                use_cache=True,
+                past_key_values=past_key_values,
+            )
             past_key_values = outputs.past_key_values
-            new_token = torch.multinomial(outputs.logits, num_samples=1).squeeze(1)
-            res = self.tokenizer.batch_decode(new_token, skip_special_tokens=True)
-            print(attention_mask.shape)
-            input_ids = new_token
-            attention_mask = torch.cat([attention_mask, torch.ones(n, 1, device=self.device)], dim=-1)
-            # print(res, flush=True, end="")
-            preds.append(res)
 
-        return preds
+            logits = outputs.logits[:, -1]
+            logits = restrictive_logit_preprocessor.process_logits(encoded_task_text['input_ids'], logits) if restrictive_logit_preprocessor else logits
+            probs = logits.softmax(dim=-1)
+            new_token = torch.multinomial(probs, 1).squeeze(1)
+            if new_token == self.tokenizer.eos_token_id:
+                break
+            ret = self.tokenizer.decode(new_token)
+            preds.append(ret)
+            encoded_task_text['input_ids'] = new_token.unsqueeze(-1)
+            attention_mask = torch.cat([attention_mask, torch.ones(n, 1, device=self.device)], dim=1)
+        return "".join(preds)

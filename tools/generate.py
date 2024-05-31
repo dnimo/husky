@@ -27,8 +27,15 @@ def pcw_generate(model, tokenizer, context_texts: list[str], task_texts: str, co
     return "".join(outputs)
 
 
-def nbce_generate(input_ids, attention_mask, model, tokenizer, max_new_tokens=800):
+def nbce_generate(model, tokenizer, context_texts: list[str], task_texts: str, max_new_tokens=800):
     processors = LogitsProcessorList([TopPLogitsWarper(0.95)])
+    inputs = []
+    for line in context_texts:
+        inputs.append(line + task_texts)
+    inputs.append(task_texts)
+    inputs = tokenizer(inputs, return_tensors="pt", padding='max_length', truncation=True, max_length=1024, return_attention_mask=True)
+    input_ids = inputs.input_ids.to(device)
+    attention_mask = inputs.attention_mask.to(device)
     n = input_ids.shape[0]
     preds = []
     past_key_values = None
@@ -43,7 +50,7 @@ def nbce_generate(input_ids, attention_mask, model, tokenizer, max_new_tokens=80
         past_key_values = outputs.past_key_values
 
         beta = 0.45
-        eta = 0.1
+        eta = 0.2
         logits = outputs.logits[:, -1]
         logits = logits - logits.logsumexp(dim=-1, keepdim=True)
         logits = processors(input_ids, logits)
@@ -56,7 +63,9 @@ def nbce_generate(input_ids, attention_mask, model, tokenizer, max_new_tokens=80
         logits_merge = -(1 + beta) * logits_max - beta * logits_uncond
         logits = torch.where(logits_uncond > -100, logits_merge, logits_max)
 
-        probs = logits.softmax(dim=-1)
+        probs = torch.nn.functional.softmax(logits[None], dim=-1)
+        probs = torch.where(torch.isnan(probs), torch.zeros_like(probs), probs)
+        print(probs, flush=True, end="")
         new_token = torch.multinomial(probs, 1).sequeeze(1)
         if new_token == tokenizer.eos_token_id:
             break
@@ -73,11 +82,15 @@ def longlora_generate():
 
 
 if __name__ == "__main__":
-    context_texts = ["The quick brown fox jumps over the lazy dog."]
-    task_texts = "The quick brown fox jumps over the lazy dog."
+    context_texts = ["ZHANGは山に登るのがとても好きです", "ZHANGさんは京都大学に在学中です", "ZHANGさんは中国山東省出身です"]
+    task_texts = "張さんの紹介をお願いします"
     model = AutoModelForCausalLM.from_pretrained(model_path).to(device)
     tokenizer = load_tokenizer(model_path)
     # model = PeftModel.from_pretrained(model, peftmodel_path, torch_dtype=torch.float16, offload_folder=None)
-    res = pcw_generate(model, tokenizer, context_texts, task_texts, Calm_Window_Size, right_indentation=False)
-
+    # res = pcw_generate(model, tokenizer, context_texts, task_texts, Calm_Window_Size, right_indentation=False)
+    #
     # print(res, flush=True, end="")
+
+    res_nbce = nbce_generate(model, tokenizer, context_texts, task_texts, Calm_Window_Size)
+    print('\n')
+    print(res_nbce, flush=True, end="")
