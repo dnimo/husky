@@ -62,7 +62,7 @@ if __name__ == "__main__":
     context_texts = ["ZHANGは山に登るのがとても好きです", "ZHANGさんは京都大学に在学中です",
                      "ZHANGさんは中国山東省出身です"]
     task_texts = "張さんの紹介をお願いします"
-    model = AutoModelForCausalLM.from_pretrained(model_path).to(device)
+    model = AutoModelForCausalLM.from_pretrained(model_path, ).to(device)
     tokenizer = load_tokenizer(model_path)
 
     inputs = []
@@ -75,9 +75,9 @@ if __name__ == "__main__":
     input_ids = inputs.input_ids.to(device)
     fisher_information = compute_fisher_information(input_ids, model)
     confidences, uncertainties = compute_confidence(fisher_information)
-
-    for i, token in enumerate(tokenizer.convert_ids_to_tokens(input_ids[0])):
-        print(f"Token: {token}")
-        print(f"Confidence: {confidences[i]}")
-        print(f"Uncertainty: {uncertainties[i]}")
+    with open("fisher_information.npy", "wb") as f:
+        for i, token in enumerate(tokenizer.convert_ids_to_tokens(input_ids[0])):
+            f.write(f"Token: {token}"+'\n')
+            f.write(f"Confidence: {confidences[i]}"+'\n')
+            f.write(f"Uncertainty: {uncertainties[i]}"+'\n')
 
