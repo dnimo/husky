@@ -1,6 +1,7 @@
 import torch
 import math
 import sys
+import numpy as np
 from transformers import AutoConfig, AutoTokenizer, PreTrainedTokenizerBase, AutoModelForCausalLM
 from transformers import TopPLogitsWarper, LogitsProcessorList, TopKLogitsWarper
 from peft import PeftModel
@@ -33,7 +34,8 @@ def nbce_generate(model, tokenizer, context_texts: list[str], task_texts: str, m
     for line in context_texts:
         inputs.append(line + task_texts)
     inputs.append(task_texts)
-    inputs = tokenizer(inputs, return_tensors="pt", padding='max_length', truncation=True, max_length=1024, return_attention_mask=True)
+    inputs = tokenizer(inputs, return_tensors="pt", padding='max_length', truncation=True, max_length=1024,
+                       return_attention_mask=True)
     input_ids = inputs.input_ids.to(device)
     attention_mask = inputs.attention_mask.to(device)
     n = input_ids.shape[0]
@@ -81,8 +83,40 @@ def longlora_generate():
     pass
 
 
+def fisher_generate(theta, epsilon=1e-6):
+    """
+        Calculate the Fisher Information Matrix.
+
+        Parameters:
+        log_likelihood_func: function
+            The log likelihood function.
+        theta: array-like
+            The parameters at which to evaluate the Fisher Information.
+        epsilon: float
+            A small number for numerical differentiation.
+
+        Returns:
+        fisher_info_matrix: 2D array
+            The Fisher Information Matrix.
+        """
+    theta = np.array(theta)
+    num_params = len(theta)
+    fisher_info_matrix = np.zeros((num_params, num_params))
+
+    for i in range(num_params):
+        for j in range(num_params):
+            theta_eps_i = np.array(theta, copy=True)
+            theta_eps_j = np.array(theta, copy=True)
+            theta_eps_i[i] += epsilon
+            theta_eps_j[j] += epsilon
+
+
+    return fisher_info_matrix
+
+
 if __name__ == "__main__":
-    context_texts = ["ZHANGは山に登るのがとても好きです", "ZHANGさんは京都大学に在学中です", "ZHANGさんは中国山東省出身です"]
+    context_texts = ["ZHANGは山に登るのがとても好きです", "ZHANGさんは京都大学に在学中です",
+                     "ZHANGさんは中国山東省出身です"]
     task_texts = "張さんの紹介をお願いします"
     model = AutoModelForCausalLM.from_pretrained(model_path).to(device)
     tokenizer = load_tokenizer(model_path)
